@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Свинка-дружок</title>
+  <style>
+:root{
+      --bg1:#f6efe7;
+      --bg2:#ecdfd0;
+      --bg3:#ddcbb8;
+      --ink:#2b231f;
+      --muted:#7a685e;
+      --line:rgba(255,255,255,.65);
+      --panel:rgba(255,255,255,.56);
+      --shadow:0 20px 60px rgba(74,55,42,.12);
+      --accent:#c78f6b;
+      --accent-soft:rgba(199,143,107,.18);
+      --safe:#7da185;
+      --safe-soft:rgba(125,161,133,.18);
+      --sleep:#aeb7cc;
+      --sleep-soft:rgba(174,183,204,.20);
+      --house:#c69c6d;
+      --house-soft:rgba(198,156,109,.15);
+      --feed:#9cbf8d;
+      --feed-soft:rgba(156,191,141,.16);
+      --radius:28px;
+      --radius-sm:18px;
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 700px at 50% -10%, rgba(255,255,255,.55), transparent 62%),
+        linear-gradient(180deg,var(--bg1),var(--bg2) 50%, var(--bg3));
+      overflow:hidden;
+    }
+    .app{
+      max-width:460px;
+      margin:0 auto;
+      min-height:100vh;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      gap:14px;
+      padding:18px 14px calc(72px + env(safe-area-inset-bottom, 0px));
+      position:relative;
+    }
+    .topbar,.panel,.moods,.actions,.statuschips{
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:var(--shadow);
+    }
+    .topbar{
+      border-radius:24px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{display:flex;flex-direction:column;gap:3px}
+    .title h1{margin:0;font-size:20px;line-height:1.1}
+    .title p{margin:0;font-size:12px;color:var(--muted)}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;
+      background:rgba(255,255,255,.6);font-size:12px;color:var(--muted);white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--safe);box-shadow:0 0 0 6px var(--safe-soft)}
+    .scene{
+      position:relative;
+      border-radius:36px;
+      overflow:hidden;
+      background:
+        radial-gradient(200px 140px at 50% 10%, rgba(255,255,255,.62), transparent 70%),
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02)),
+        linear-gradient(180deg,#f7f0e8,#ece0d0 60%, #dbc7b0);
+      border:1px solid rgba(255,255,255,.45);
+      box-shadow:var(--shadow);
+      min-height:420px;
+    }
+    .scene.sleep-mode{background:linear-gradient(180deg,#dbe1f0,#bcc6dd 56%, #9caac4)}
+    .scene.house-mode{background:linear-gradient(180deg,#f5eadf,#e7d5bd 52%, #cfb08d)}
+    .scene.feed-mode{background:linear-gradient(180deg,#f3f4e9,#dde5cf 55%, #c7d1b6)}
+    .scene.relax-mode{background:linear-gradient(180deg,#f8f2eb,#eadfd2 52%, #dcc6b4)}
+    .scene::before{
+      content:"";position:absolute;inset:0;
+      background:radial-gradient(420px 180px at 50% 85%, rgba(255,255,255,.4), transparent 70%);
+      pointer-events:none;
+    }
+    .scene-inner{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:40px}
+    .ground{
+      position:absolute;left:22px;right:22px;bottom:24px;height:120px;border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.06)), rgba(255,255,255,.28);
+      filter:blur(.2px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .hay,.bowl,.house,.stars,.food-dots,.heartburst{position:absolute;pointer-events:none}
+    .hay{
+      bottom:48px;right:26px;width:76px;height:42px;border-radius:24px 24px 18px 18px;
+      background:repeating-linear-gradient(100deg,#d1b36a 0 5px,#e2c575 5px 10px,#d8bb71 10px 15px);
+      box-shadow:0 12px 24px rgba(92,68,22,.12);
+      opacity:.9;
+      transform:translateY(10px) rotate(-3deg);
+    }
+    .bowl{
+      left:42px;bottom:46px;width:74px;height:34px;background:linear-gradient(180deg,#d9e4ce,#a8b98d);border-radius:0 0 30px 30px;
+      box-shadow:0 10px 20px rgba(77,102,62,.18);
+      opacity:.96;transform:translateY(10px);
+    }
+    .bowl::before{content:"";position:absolute;left:-2px;right:-2px;top:-10px;height:16px;border-radius:999px;background:linear-gradient(180deg,#f7fbf2,#d1dfbf)}
+    .house{
+      width:146px;height:110px;left:24px;bottom:40px;border-radius:38px 38px 22px 22px;
+      background:linear-gradient(180deg,#e2ba89,#be8d58);
+      box-shadow:0 22px 34px rgba(96,64,24,.18);
+      opacity:0;transform:translateY(16px) scale(.96);
+      transition:all .45s var(--ease);
+    }
+    .house::before{content:"";position:absolute;left:18px;right:18px;bottom:-16px;height:26px;border-radius:999px;background:rgba(78,52,26,.12)}
+    .house::after{content:"";position:absolute;left:39px;top:42px;width:68px;height:58px;border-radius:30px 30px 22px 22px;background:rgba(94,58,29,.5)}
+    .scene.house-mode .house,.scene.sleep-mode .house{opacity:1;transform:translateY(0) scale(1)}
+    .pet-wrap{
+      position:relative;
+      width:250px;height:210px;
+      display:flex;align-items:center;justify-content:center;
+      transform:translateY(0);
+      transition:transform .55s var(--ease), filter .4s var(--ease);
+    }
+    .pet-wrap.walk-right{animation:walkRight 4.8s var(--ease) forwards}
+    .pet-wrap.walk-left{animation:walkLeft 4.8s var(--ease) forwards}
+    .pet-wrap.to-house{animation:toHouse 1.8s var(--ease) forwards}
+    @keyframes walkRight{0%{transform:translate(-24px,0)}40%{transform:translate(18px,-6px)}70%{transform:translate(40px,0)}100%{transform:translate(52px,0)}}
+    @keyframes walkLeft{0%{transform:translate(34px,0)}40%{transform:translate(0,-6px)}70%{transform:translate(-28px,0)}100%{transform:translate(-46px,0)}}
+    @keyframes toHouse{0%{transform:translate(0,0) scale(1)}70%{transform:translate(-42px,0) scale(.98)}100%{transform:translate(-58px,4px) scale(.82);opacity:.1}}
+    svg{overflow:visible}
+    .pet{filter:drop-shadow(0 26px 32px rgba(78,59,40,.18))}
+    .idle-bob{animation:bob 3.2s ease-in-out infinite}
+    .pet.sleeping .eye-open,.pet.sleeping .eye-spark,.pet.relaxed .eye-open{opacity:0}
+    .pet.sleeping .eye-closed,.pet.relaxed .eye-closed{opacity:1}
+    .pet .eye-closed{opacity:0}
+    .pet.purring .body-main{animation:purr 1.2s ease-in-out infinite}
+    .pet.happy .ear-left,.pet.happy .ear-right{animation:ears 1.3s ease-in-out infinite}
+    .pet.hungry .nose-group{animation:sniff .45s ease-in-out infinite}
+    .pet.sad .head-group{transform:translateY(8px)}
+    .pet.hidey{opacity:.18;transform:translateX(-46px) scale(.86)}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    @keyframes purr{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.012)}}
+    @keyframes ears{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+    @keyframes sniff{0%,100%{transform:translateX(0)}50%{transform:translateX(2px)}}
+
+    .touch-zone{
+      position:absolute;inset:0;cursor:pointer;background:transparent;border:none;
+    }
+    .statuschips{border-radius:22px;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .chip{background:rgba(255,255,255,.55);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+    .chip label{font-size:11px;color:var(--muted)}
+    .chip strong{font-size:14px;font-weight:700}
+
+    .controls{display:grid;gap:12px}
+    .moods,.actions{padding:12px;border-radius:24px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}
+    .section-title h2{margin:0;font-size:14px}
+    .section-title span{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    button.ctrl{
+      border:none;border-radius:20px;padding:14px 12px;text-align:left;background:rgba(255,255,255,.62);
+      color:var(--ink);font:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.4);
+      transition:transform .16s ease, background .2s ease, box-shadow .2s ease;
+      min-height:68px;
+    }
+    button.ctrl:active{transform:scale(.98)}
+    button.ctrl small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+    button.ctrl.active{background:var(--accent-soft);box-shadow:0 0 0 1px rgba(199,143,107,.22) inset}
+    .actions .grid{grid-template-columns:repeat(4,1fr)}
+    .actions button.ctrl{min-height:60px;padding:12px 10px;text-align:center}
+    .mini-switch{display:flex;gap:8px}
+    .mini-switch button{border:none;background:rgba(255,255,255,.62);padding:8px 10px;border-radius:999px;font:inherit;font-size:12px;color:var(--muted)}
+    .mini-switch button.active{background:rgba(43,35,31,.9);color:#fff}
+    .bubble{
+      position:absolute;top:18px;left:50%;transform:translateX(-50%) translateY(-6px);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.78);
+      color:var(--ink);font-size:13px;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.08);opacity:0;transition:opacity .3s ease, transform .3s ease;
+    }
+    .bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .heartburst span{
+      position:absolute;display:block;font-size:18px;opacity:0;animation:burst 1.2s ease forwards;
+    }
+    @keyframes burst{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x), var(--y)) scale(1.25)}}
+    .stars i{
+      position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);opacity:0;animation:twinkle 4s linear infinite;
+    }
+    .scene.sleep-mode .stars i{opacity:.85}
+    @keyframes twinkle{0%,100%{transform:scale(.8);opacity:.35}50%{transform:scale(1.3);opacity:.95}}
+    .food-dots i{
+      position:absolute;width:10px;height:10px;border-radius:50%;background:#7faa6f;opacity:.9;
+      box-shadow:0 2px 0 rgba(255,255,255,.4) inset;
+    }
+    .scene.feed-mode .food-dots i{animation:foodPulse 1.2s ease-in-out infinite}
+    @keyframes foodPulse{0%,100%{transform:scale(.9)}50%{transform:scale(1.12)}}
+    .watermark{
+      position:fixed;
+      right:16px;
+      bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+      z-index:4;
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:lowercase;
+      color:rgba(44,36,31,.38);
+      pointer-events:none;
+      user-select:none;
+    }
+    @media (max-width:390px){
+      .actions .grid{grid-template-columns:repeat(2,1fr)}
+      .statuschips{grid-template-columns:1fr}
+      .scene{min-height:390px}
+      .pet-wrap{width:220px;height:190px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="appRoot">
+<div class="topbar">
+<div class="title">
+<h1>Свинка-дружок</h1>
+<p>антистресс без чувства вины</p>
+</div>
+<div class="badge">
+<span class="dot"></span>
+<span id="nowLabel">спокойная и сытая</span>
+</div>
+</div>
+<div class="controls">
+<div class="scene relax-mode" id="scene">
+<div class="bubble" id="bubble">я рядом</div>
+<div aria-hidden="true" class="stars">
+<i style="left:15%;top:14%;animation-delay:0s"></i>
+<i style="left:28%;top:10%;animation-delay:1.2s"></i>
+<i style="left:76%;top:16%;animation-delay:2.4s"></i>
+<i style="left:64%;top:24%;animation-delay:3s"></i>
+</div>
+<div aria-hidden="true" class="food-dots">
+<i style="left:54px;bottom:78px"></i>
+<i style="left:71px;bottom:84px"></i>
+<i style="left:88px;bottom:78px"></i>
+</div>
+<div aria-hidden="true" class="house"></div>
+<div aria-hidden="true" class="hay"></div>
+<div aria-hidden="true" class="bowl"></div>
+<div class="ground"></div>
+<div aria-hidden="true" class="heartburst" id="heartburst"></div>
+<div class="scene-inner">
+<div class="pet-wrap idle-bob" id="petWrap">
+<svg aria-label="Морская свинка" class="pet calm" height="190" id="petSvg" role="img" viewBox="0 0 240 190" width="240">
+<g class="shadow">
+<ellipse cx="122" cy="160" fill="rgba(60,42,28,.12)" rx="68" ry="18"></ellipse>
+</g>
+<g class="head-group">
+<g class="ear-left" transform-origin="80 48">
+<ellipse cx="84" cy="48" fill="#c98f8f" opacity=".9" rx="16" ry="12"></ellipse>
+</g>
+<g class="ear-right" transform-origin="146 42">
+<ellipse cx="145" cy="43" fill="#c98f8f" opacity=".88" rx="14" ry="11"></ellipse>
+</g>
+</g>
+<g class="body-main" transform-origin="122 102">
+<ellipse cx="122" cy="98" fill="#7f583a" rx="84" ry="58"></ellipse>
+<ellipse cx="134" cy="101" fill="#f0e0cf" rx="60" ry="46"></ellipse>
+<ellipse cx="88" cy="92" fill="#a16f47" rx="34" ry="28"></ellipse>
+<ellipse cx="149" cy="78" fill="#6c452d" opacity=".72" rx="23" ry="18"></ellipse>
+<ellipse cx="72" cy="97" fill="#f7ecdf" opacity=".76" rx="12" ry="10"></ellipse>
+</g>
+<g class="nose-group">
+<ellipse cx="166" cy="103" fill="#f3d9c7" rx="15" ry="12"></ellipse>
+<ellipse cx="172" cy="103" fill="#be7d83" rx="8" ry="6"></ellipse>
+<circle cx="169" cy="100" fill="#3f2d23" opacity=".55" r="1.2"></circle>
+<circle cx="175" cy="101" fill="#3f2d23" opacity=".55" r="1.2"></circle>
+</g>
+<g class="eye-open">
+<circle cx="135" cy="87" fill="#1f1714" r="5.2"></circle>
+<circle class="eye-spark" cx="137" cy="85" fill="#fff" r="1.4"></circle>
+</g>
+<g class="eye-closed">
+<path d="M129 87 Q135 91 141 87" fill="none" stroke="#3a2a1f" stroke-linecap="round" stroke-width="3.2"></path>
+</g>
+<g>
+<ellipse cx="88" cy="142" fill="#6a472f" rx="12" ry="8"></ellipse>
+<ellipse cx="146" cy="146" fill="#6a472f" rx="13" ry="8.5"></ellipse>
+</g>
+</svg>
+</div>
+</div>
+<button aria-label="Погладить свинку" class="touch-zone" id="touchZone"></button>
+</div>
+<div class="statuschips">
+<div class="chip">
+<label>сытость</label>
+<strong id="hungerLabel">сытая</strong>
+</div>
+<div class="chip">
+<label>настроение</label>
+<strong id="moodLabel">спокойная</strong>
+</div>
+<div class="chip">
+<label>режим</label>
+<strong id="modeLabel">авто</strong>
+</div>
+</div>
+<div class="moods">
+<div class="section-title">
+<h2>Настроение свинки</h2>
+<div class="mini-switch">
+<button class="active" id="autoBtn">авто</button>
+<button id="manualBtn">ручной</button>
+</div>
+</div>
+<div class="grid" id="moodGrid">
+<button class="ctrl active" data-mode="relax">Просто рядом<small>дышит, моргает, шуршит</small></button>
+<button class="ctrl" data-mode="pet">Гладить<small>урчит и расслабляется</small></button>
+<button class="ctrl" data-mode="feed">Покормить<small>радуется и хрумкает</small></button>
+<button class="ctrl" data-mode="house">Домик<small>прячется и выглядывает</small></button>
+<button class="ctrl" data-mode="sleep">Сон<small>тихо сопит и отдыхает</small></button>
+<button class="ctrl" data-mode="play">Милая радость<small>короткая активность и писк</small></button>
+</div>
+</div>
+<div class="actions">
+<div class="section-title">
+<h2>Быстрые действия</h2>
+<span>всё чинится в один тап</span>
+</div>
+<div class="grid">
+<button class="ctrl" id="actPet">Гладить</button>
+<button class="ctrl" id="actFeed">Еда</button>
+<button class="ctrl" id="actHouse">Домик</button>
+<button class="ctrl" id="actCalm">Уют</button>
+</div>
+</div>
+</div>
+<footer class="watermark" id="watermarkText">anna afanaseva</footer></div>
+<script>
+window.APP_CONFIG = {
+  watermarkText: 'anna afanaseva',
+  appTitle: 'Свинка-дружок'
+};
+</script>
+  <script>
+const CONFIG = window.APP_CONFIG || {};
+const state = {
+      manual:false,
+      scene:'relax',
+      hunger:88,
+      mood:'спокойная',
+      calm:90,
+      reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      timers:[],
+      autoLoop:null,
+      audioCtx:null,
+      introUnlocked:false
+    };
+
+    const els = {
+      root: document.getElementById('appRoot'),
+      scene: document.getElementById('scene'),
+      petWrap: document.getElementById('petWrap'),
+      petSvg: document.getElementById('petSvg'),
+      bubble: document.getElementById('bubble'),
+      heartburst: document.getElementById('heartburst'),
+      nowLabel: document.getElementById('nowLabel'),
+      hungerLabel: document.getElementById('hungerLabel'),
+      moodLabel: document.getElementById('moodLabel'),
+      modeLabel: document.getElementById('modeLabel'),
+      autoBtn: document.getElementById('autoBtn'),
+      manualBtn: document.getElementById('manualBtn'),
+      moodGrid: document.getElementById('moodGrid'),
+      touchZone: document.getElementById('touchZone'),
+      actPet: document.getElementById('actPet'),
+      actFeed: document.getElementById('actFeed'),
+      actHouse: document.getElementById('actHouse'),
+      actCalm: document.getElementById('actCalm')
+    };
+
+    if(state.reduceMotion) els.root.classList.add('reduce');
+
+    function initWatermark(){
+      const wm = document.getElementById('watermarkText');
+      if(!wm) return;
+      wm.textContent = CONFIG.watermarkText || '';
+      wm.style.display = wm.textContent ? 'block' : 'none';
+      const title = document.querySelector('.title h1');
+      if(title && CONFIG.appTitle) title.textContent = CONFIG.appTitle;
+      if(CONFIG.appTitle) document.title = CONFIG.appTitle;
+    }
+
+    function clearTimers(){ state.timers.forEach(t=>clearTimeout(t)); state.timers=[]; }
+    function later(fn,ms){ const t=setTimeout(fn,ms); state.timers.push(t); }
+    function setBubble(text, ms=1800){
+      els.bubble.textContent=text;
+      els.bubble.classList.add('show');
+      later(()=>els.bubble.classList.remove('show'), ms);
+    }
+    function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+    function updateLabels(){
+      els.nowLabel.textContent = `${state.mood} • ${state.hunger > 72 ? 'сытая' : state.hunger > 52 ? 'слегка голодная' : 'просит вкусняшку'}`;
+      els.hungerLabel.textContent = state.hunger > 72 ? 'сытая' : state.hunger > 52 ? 'чуть голодная' : 'хочет есть';
+      els.moodLabel.textContent = state.mood;
+      els.modeLabel.textContent = state.manual ? 'ручной' : 'авто';
+    }
+
+    function resetClasses(){
+      els.scene.className = 'scene';
+      els.petSvg.className.baseVal = 'pet calm';
+      els.petWrap.className = 'pet-wrap idle-bob';
+      els.heartburst.innerHTML = '';
+    }
+
+    function heartBurst(char='❤'){
+      els.heartburst.innerHTML='';
+      const positions = [
+        ['20px','-20px'],['-18px','-28px'],['-44px','-10px'],['40px','-12px']
+      ];
+      positions.forEach(([x,y], i)=>{
+        const s = document.createElement('span');
+        s.textContent = char;
+        s.style.left = '50%';
+        s.style.top = '56%';
+        s.style.setProperty('--x', x);
+        s.style.setProperty('--y', y);
+        s.style.animationDelay = `${i*60}ms`;
+        els.heartburst.appendChild(s);
+      });
+    }
+
+    function ensureAudio(){
+      if(!state.audioCtx){
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if(!AudioCtx) return null;
+        state.audioCtx = new AudioCtx();
+      }
+      if(state.audioCtx.state === 'suspended') state.audioCtx.resume();
+      state.introUnlocked = true;
+      return state.audioCtx;
+    }
+
+    function tone(freq=420, duration=.12, type='triangle', gain=.012, delay=0, attack=.02){
+      const ctx = ensureAudio();
+      if(!ctx) return;
+      const osc = ctx.createOscillator();
+      const amp = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1600;
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+      amp.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      amp.gain.exponentialRampToValueAtTime(gain, ctx.currentTime + delay + attack);
+      amp.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + duration);
+      osc.connect(filter).connect(amp).connect(ctx.destination);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + duration + 0.04);
+    }
+
+    function rustle(delay=0, duration=.06, gain=.0035){
+      const ctx = ensureAudio();
+      if(!ctx) return;
+      const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      const src = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const amp = ctx.createGain();
+      filter.type = 'bandpass';
+      filter.frequency.value = 950;
+      filter.Q.value = 0.8;
+      src.buffer = buffer;
+      amp.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      amp.gain.exponentialRampToValueAtTime(gain, ctx.currentTime + delay + 0.012);
+      amp.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + duration);
+      src.connect(filter).connect(amp).connect(ctx.destination);
+      src.start(ctx.currentTime + delay);
+      src.stop(ctx.currentTime + delay + duration + 0.03);
+    }
+
+    function purrSound(){
+      tone(186,.22,'triangle',.009,0,.035);
+      tone(198,.22,'triangle',.008,.16,.03);
+      tone(190,.2,'triangle',.007,.32,.03);
+    }
+    function wheekSound(){
+      tone(540,.14,'triangle',.012,0,.025);
+      tone(690,.13,'triangle',.012,.16,.025);
+      tone(610,.11,'triangle',.01,.34,.02);
+    }
+    function munchSound(){
+      rustle(0,.07,.0032);
+      rustle(.11,.06,.0028);
+      rustle(.23,.07,.003);
+      tone(210,.045,'sine',.0035,.02,.01);
+      tone(180,.04,'sine',.003,.14,.01);
+    }
+    function sleepySound(){
+      tone(248,.24,'sine',.0048,0,.05);
+      tone(226,.2,'sine',.0036,.28,.05);
+    }
+
+    function softVibe(pattern=[10]){
+      if(navigator.vibrate) navigator.vibrate(pattern);
+    }
+
+    function activateScene(mode, userTriggered=false){
+      clearTimers();
+      state.scene = mode;
+      resetClasses();
+      const activeBtn = [...els.moodGrid.querySelectorAll('.ctrl')];
+      activeBtn.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+
+      switch(mode){
+        case 'relax':
+          els.scene.classList.add('relax-mode');
+          els.petSvg.classList.add('relaxed');
+          state.mood = 'спокойная';
+          state.calm = clamp(state.calm + 8, 0, 100);
+          state.hunger = clamp(state.hunger - 3, 50, 100);
+          setBubble('я рядом');
+          break;
+        case 'pet':
+          els.scene.classList.add('relax-mode');
+          els.petSvg.classList.add('purring','happy');
+          state.mood = 'довольная';
+          state.calm = clamp(state.calm + 12, 0, 100);
+          state.hunger = clamp(state.hunger - 2, 50, 100);
+          setBubble('мягко урчит');
+          heartBurst('❤');
+          softVibe([12]);
+          if(userTriggered || state.introUnlocked) purrSound();
+          later(()=>{
+            if(state.manual) return;
+            state.mood = 'сонная';
+            updateLabels();
+          }, 2600);
+          break;
+        case 'feed':
+          els.scene.classList.add('feed-mode');
+          els.petSvg.classList.add('hungry');
+          els.petWrap.classList.add('walk-left');
+          state.mood = 'хрумкает';
+          state.hunger = 94;
+          setBubble('ви-и! хрум-хрум');
+          heartBurst('✦');
+          softVibe([10, 16, 10]);
+          if(userTriggered || state.introUnlocked){ wheekSound(); later(munchSound, 240); later(munchSound, 520);} 
+          later(()=>{
+            if(state.manual) return;
+            activateScene('relax');
+          }, 3400);
+          break;
+        case 'house':
+          els.scene.classList.add('house-mode');
+          els.petSvg.classList.add('sad');
+          state.mood = 'в домике';
+          state.calm = clamp(state.calm + 6, 0, 100);
+          setBubble('спрячусь в домик');
+          els.petWrap.classList.add('to-house');
+          later(()=>{ els.petSvg.classList.add('hidey'); }, 1200);
+          later(()=>{
+            if(state.manual) return;
+            activateScene('relax');
+          }, 3200);
+          break;
+        case 'sleep':
+          els.scene.classList.add('sleep-mode');
+          els.petSvg.classList.add('sleeping');
+          state.mood = 'сонная';
+          state.calm = clamp(state.calm + 14, 0, 100);
+          setBubble('сопит тихонько');
+          if(userTriggered || state.introUnlocked) sleepySound();
+          later(()=>{
+            if(state.manual) return;
+            activateScene('relax');
+          }, 4200);
+          break;
+        case 'play':
+          els.scene.classList.add('relax-mode');
+          els.petSvg.classList.add('happy');
+          els.petWrap.classList.add(Math.random() > .5 ? 'walk-right':'walk-left');
+          state.mood = 'радуется';
+          state.hunger = clamp(state.hunger - 12, 48, 100);
+          setBubble('рада тебе');
+          heartBurst('✦');
+          softVibe([10,22,10]);
+          if(userTriggered || state.introUnlocked) wheekSound();
+          later(()=>{
+            if(state.manual) return;
+            activateScene(state.hunger < 64 ? 'feed' : 'relax');
+          }, 3000);
+          break;
+      }
+      updateLabels();
+    }
+
+    function petNow(){ activateScene('pet', true); }
+    function feedNow(){ activateScene('feed', true); }
+    function houseNow(){ activateScene('house', true); }
+    function calmNow(){ activateScene('relax', true); }
+
+    els.touchZone.addEventListener('click', () => {
+      state.manual = true;
+      syncModeButtons();
+      petNow();
+    });
+    els.actPet.addEventListener('click', petNow);
+    els.actFeed.addEventListener('click', feedNow);
+    els.actHouse.addEventListener('click', houseNow);
+    els.actCalm.addEventListener('click', calmNow);
+    els.moodGrid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('[data-mode]');
+      if(!btn) return;
+      state.manual = true;
+      syncModeButtons();
+      activateScene(btn.dataset.mode, true);
+    });
+
+    function syncModeButtons(){
+      els.autoBtn.classList.toggle('active', !state.manual);
+      els.manualBtn.classList.toggle('active', state.manual);
+      updateLabels();
+    }
+    els.autoBtn.addEventListener('click', ()=>{ state.manual=false; syncModeButtons(); autoLoop(true); });
+    els.manualBtn.addEventListener('click', ()=>{ state.manual=true; syncModeButtons(); });
+
+    function autoLoop(immediate=false){
+      clearTimeout(state.autoLoop);
+      if(state.manual) return;
+      if(immediate) activateScene('relax');
+      const delay = 6500 + Math.random()*4200;
+      state.autoLoop = setTimeout(()=>{
+        if(state.manual) return;
+        state.hunger = clamp(state.hunger - (Math.random()*9 + 2), 46, 100);
+        const pick = state.hunger < 62 ? ['feed','house','sleep','pet'] : ['relax','pet','sleep','play','house'];
+        const mode = pick[Math.floor(Math.random()*pick.length)];
+        activateScene(mode);
+        autoLoop();
+      }, delay);
+    }
+
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){ clearTimers(); clearTimeout(state.autoLoop); }
+      else if(!state.manual){ autoLoop(true); }
+    });
+
+    initWatermark();
+    activateScene('relax');
+    updateLabels();
+    autoLoop();
+</script>
+</body>
+</html>
