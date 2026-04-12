@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Свинка-дружок</title>
+  <style>
+    :root {
+      --bg1:#f7efe6; --bg2:#ebdfd0; --bg3:#dcc9b6;
+      --ink:#2d2520; --muted:#79665c;
+      --glass:rgba(255,255,255,.58); --line:rgba(255,255,255,.64);
+      --shadow:0 24px 60px rgba(79,58,43,.14); --accent:#cb8d69;
+      --good:#96bc83; --sleep:#adb9d0; --house:#c99461;
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { height:100%; }
+    body {
+      margin:0; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--ink);
+      background:radial-gradient(1200px 760px at 50% -10%, rgba(255,255,255,.6), transparent 60%), linear-gradient(180deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+    }
+    .app {
+      min-height:100vh; max-width:460px; margin:0 auto;
+      padding:18px 14px calc(80px + env(safe-area-inset-bottom,0px));
+      display:grid; grid-template-rows:auto auto 1fr auto auto; gap:12px;
+    }
+    .glass {
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      background:var(--glass); border:1px solid var(--line); box-shadow:var(--shadow);
+    }
+    .topbar { border-radius:24px; padding:14px 16px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .title h1 { margin:0; font-size:20px; line-height:1.05; }
+    .title p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill, .btn, .mode-btn {
+      border:none; border-radius:999px; background:rgba(255,255,255,.78); color:var(--ink); font:inherit;
+    }
+    .pill { padding:10px 12px; font-size:12px; color:var(--muted); }
+    .btn, .mode-btn { padding:12px 14px; font-weight:600; }
+    .btn:active, .mode-btn:active, .ctrl:active, .touch:active { transform:scale(.98); }
+    .btn.on { background:rgba(150,188,131,.28); }
+
+    .scene { position:relative; min-height:430px; border-radius:34px; overflow:hidden; }
+    .scene.relax { background:linear-gradient(180deg,#f8f2eb,#eadfd2 54%,#dcc6b4); }
+    .scene.feed { background:linear-gradient(180deg,#f3f4ea,#dde5cf 55%,#c7d1b6); }
+    .scene.house { background:linear-gradient(180deg,#f5eadf,#e6d4bc 54%,#cfb08d); }
+    .scene.sleep { background:linear-gradient(180deg,#dbe1ef,#bcc7de 56%,#9caac4); }
+    .scene.play { background:linear-gradient(180deg,#faefe8,#eed8cb 54%,#ddc2ad); }
+    .glow { position:absolute; inset:0; background:radial-gradient(260px 160px at 50% 12%, rgba(255,255,255,.55), transparent 70%); }
+    .bubble { position:absolute; top:18px; left:50%; transform:translateX(-50%); padding:10px 14px; border-radius:999px; background:rgba(255,255,255,.82); box-shadow:0 8px 24px rgba(0,0,0,.08); font-size:13px; z-index:5; }
+    .ground { position:absolute; left:18px; right:18px; bottom:18px; height:118px; border-radius:999px; background:rgba(255,255,255,.24); }
+    .house-shape { position:absolute; left:24px; bottom:42px; width:148px; height:112px; border-radius:40px 40px 24px 24px; background:linear-gradient(180deg,#e2ba89,#be8d58); box-shadow:0 22px 34px rgba(96,64,24,.18); opacity:.18; transition:.35s var(--ease); }
+    .scene.house .house-shape, .scene.sleep .house-shape { opacity:1; }
+    .house-hole { position:absolute; left:42px; top:44px; width:68px; height:56px; border-radius:30px 30px 22px 22px; background:rgba(94,58,29,.48); }
+    .hay { position:absolute; right:26px; bottom:54px; width:82px; height:44px; border-radius:24px 24px 18px 18px; background:repeating-linear-gradient(100deg,#d1b36a 0 5px,#e2c575 5px 10px,#d8bb71 10px 15px); }
+    .bowl { position:absolute; left:46px; bottom:48px; width:84px; height:38px; border-radius:0 0 32px 32px; background:linear-gradient(180deg,#d9e4ce,#a8b98d); }
+    .bowl::before { content:""; position:absolute; left:-2px; right:-2px; top:-10px; height:16px; border-radius:999px; background:linear-gradient(180deg,#f7fbf2,#d1dfbf); }
+    .veg { position:absolute; left:74px; bottom:78px; width:24px; height:16px; background:#7fb867; border-radius:16px 16px 2px 16px; transform:rotate(-18deg); box-shadow:12px -2px 0 #95ca7b; }
+
+    .pet-area { position:absolute; inset:0; z-index:4; }
+    .pet-wrap { position:absolute; left:50%; bottom:58px; width:230px; height:158px; transform:translateX(-50%); transition:transform .35s var(--ease), opacity .35s var(--ease); }
+    .pet-wrap.hide { transform:translateX(calc(-50% - 54px)) scale(.82); opacity:.16; }
+    .pet-wrap.feed { transform:translateX(calc(-50% - 18px)); }
+    .pet-wrap.play { transform:translateX(calc(-50% + 16px)) translateY(-4px); }
+    .pet-wrap.pet { transform:translateX(-50%) scale(1.02); }
+    .shadow { position:absolute; left:32px; right:32px; bottom:0; height:26px; border-radius:999px; background:rgba(70,52,38,.14); filter:blur(6px); }
+    .pig { position:absolute; inset:0; }
+    .body { position:absolute; left:28px; right:30px; bottom:24px; height:92px; border-radius:72px; background:linear-gradient(180deg,#7f583a,#6d452d); box-shadow:inset 0 1px 0 rgba(255,255,255,.15); }
+    .patch-main { position:absolute; right:28px; top:18px; width:118px; height:74px; border-radius:56px; background:#f2e1d1; }
+    .patch-small { position:absolute; left:28px; top:32px; width:54px; height:42px; border-radius:34px; background:#a57249; }
+    .ear { position:absolute; top:20px; width:28px; height:30px; border-radius:70% 70% 50% 50%; background:#ca9291; }
+    .ear.left { left:62px; transform:rotate(-18deg); }
+    .ear.right { right:56px; transform:rotate(18deg); }
+    .eye { position:absolute; top:68px; left:116px; width:11px; height:11px; border-radius:50%; background:#201815; }
+    .eye::after { content:""; position:absolute; top:1px; left:2px; width:3px; height:3px; border-radius:50%; background:#fff; }
+    .eye.closed { height:3px; border-radius:999px; background:#3a2a1f; top:72px; }
+    .eye.closed::after { display:none; }
+    .nose { position:absolute; right:36px; top:86px; width:18px; height:13px; border-radius:999px; background:#be7d83; }
+    .cheek { position:absolute; left:134px; top:82px; width:21px; height:16px; border-radius:999px; background:rgba(242,188,177,.56); }
+    .foot { position:absolute; bottom:18px; width:24px; height:14px; border-radius:999px; background:#6a472f; }
+    .foot.left { left:64px; } .foot.right { right:56px; }
+    .breathe .body, .breathe .patch-main, .breathe .patch-small { animation:breathe 2.7s ease-in-out infinite; }
+    .petting .body, .petting .patch-main { animation:purr 1.15s ease-in-out infinite; }
+    .happy .ear.left, .happy .ear.right { animation:earwig 1s ease-in-out infinite; }
+    .touch { position:absolute; inset:0; border:none; background:transparent; cursor:pointer; }
+    .heart { position:absolute; font-size:18px; opacity:0; animation:burst 1.2s ease forwards; }
+    .burstbox { position:absolute; inset:0; pointer-events:none; z-index:6; }
+    @keyframes burst { 0%{opacity:0; transform:translate(0,0) scale(.6)} 18%{opacity:1} 100%{opacity:0; transform:translate(var(--x), var(--y)) scale(1.2)} }
+    @keyframes breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.012)} }
+    @keyframes purr { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-1px) scale(1.014)} }
+    @keyframes earwig { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(-10deg)} }
+
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .metric { border-radius:22px; padding:12px; }
+    .metric label { display:block; font-size:11px; color:var(--muted); }
+    .metric strong { display:block; margin-top:4px; font-size:14px; }
+
+    .controls { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .ctrl { border:none; border-radius:20px; padding:14px 12px; text-align:left; background:rgba(255,255,255,.68); font:inherit; color:var(--ink); min-height:70px; }
+    .ctrl small { display:block; margin-top:4px; font-size:11px; color:var(--muted); }
+    .ctrl.active { background:rgba(203,141,105,.22); }
+    .watermark { position:fixed; right:16px; bottom:12px; font-size:11px; letter-spacing:.08em; color:rgba(47,39,34,.38); pointer-events:none; }
+
+    @media (max-width:390px) { .stats { grid-template-columns:repeat(2,1fr); } .scene{min-height:398px} }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after{animation:none !important;transition:none !important} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar glass">
+      <div class="title"><h1>Свинка-дружок</h1><p>мягкая, читаемая и с нормальными реакциями</p></div>
+      <div class="row">
+        <button id="soundBtn" class="btn">Включить звук</button>
+        <button id="blowBtn" class="btn">Подуть</button>
+      </div>
+    </div>
+
+    <div id="scene" class="scene glass relax">
+      <div class="glow"></div>
+      <div id="bubble" class="bubble">я рядом</div>
+      <div class="house-shape"><div class="house-hole"></div></div>
+      <div class="hay"></div>
+      <div class="bowl"></div>
+      <div class="veg"></div>
+      <div class="ground"></div>
+      <div id="burstbox" class="burstbox"></div>
+
+      <div id="petWrap" class="pet-wrap breathe">
+        <div class="shadow"></div>
+        <div class="pig" id="pig">
+          <div class="ear left"></div><div class="ear right"></div>
+          <div class="body"></div>
+          <div class="patch-main"></div><div class="patch-small"></div>
+          <div id="eyeEl" class="eye"></div>
+          <div class="cheek"></div><div class="nose"></div>
+          <div class="foot left"></div><div class="foot right"></div>
+        </div>
+      </div>
+      <button id="touch" class="touch" aria-label="Погладить свинку"></button>
+    </div>
+
+    <div class="stats">
+      <div class="metric glass"><label>сытость</label><strong id="hungerLabel">сытая</strong></div>
+      <div class="metric glass"><label>настроение</label><strong id="moodLabel">спокойная</strong></div>
+      <div class="metric glass"><label>звук</label><strong id="soundLabel">выключен</strong></div>
+      <div class="metric glass"><label>микрофон</label><strong id="micLabel">не включён</strong></div>
+    </div>
+
+    <div id="controls" class="controls">
+      <button class="ctrl active" data-mode="relax">Просто рядом<small>тихо живёт рядом</small></button>
+      <button class="ctrl" data-mode="pet">Гладить<small>урчит на палец</small></button>
+      <button class="ctrl" data-mode="feed">Покормить<small>радуется и хрумкает</small></button>
+      <button class="ctrl" data-mode="house">Домик<small>прячется и отдыхает</small></button>
+      <button class="ctrl" data-mode="sleep">Сон<small>почти без звука</small></button>
+      <button class="ctrl" data-mode="play">Милая радость<small>короткий довольный писк</small></button>
+    </div>
+
+    <div class="watermark">anna afanaseva</div>
+  </div>
+
+  <script>
+    const state = {
+      scene:'relax', soundOn:false, micOn:false, hunger:88, mood:'спокойная',
+      audio:null, master:null, petting:false, petTimeout:null,
+      analyser:null, micStream:null, micRAF:null, blowCooldown:false
+    };
+
+    const els = {
+      scene: document.getElementById('scene'),
+      bubble: document.getElementById('bubble'),
+      petWrap: document.getElementById('petWrap'),
+      eyeEl: document.getElementById('eyeEl'),
+      burstbox: document.getElementById('burstbox'),
+      hungerLabel: document.getElementById('hungerLabel'),
+      moodLabel: document.getElementById('moodLabel'),
+      soundLabel: document.getElementById('soundLabel'),
+      micLabel: document.getElementById('micLabel'),
+      soundBtn: document.getElementById('soundBtn'),
+      blowBtn: document.getElementById('blowBtn'),
+      touch: document.getElementById('touch'),
+      controls: [...document.querySelectorAll('#controls .ctrl')]
+    };
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+    function setBubble(text){ els.bubble.textContent = text; }
+    function sync(){
+      els.hungerLabel.textContent = state.hunger > 72 ? 'сытая' : state.hunger > 52 ? 'чуть голодная' : 'хочет есть';
+      els.moodLabel.textContent = state.mood;
+      els.soundLabel.textContent = state.soundOn ? 'включён' : 'выключен';
+      els.micLabel.textContent = state.micOn ? 'слушает' : 'не включён';
+      els.soundBtn.classList.toggle('on', state.soundOn);
+      els.blowBtn.classList.toggle('on', state.micOn);
+      els.controls.forEach(b => b.classList.toggle('active', b.dataset.mode === state.scene));
+    }
+    function resetVisual(){
+      els.scene.className = 'scene glass ' + state.scene;
+      els.petWrap.className = 'pet-wrap breathe';
+      els.eyeEl.className = 'eye';
+      els.burstbox.innerHTML='';
+    }
+    function hearts(ch='❤'){
+      els.burstbox.innerHTML='';
+      [[22,-22],[-18,-30],[-42,-12],[40,-14]].forEach(([x,y],i)=>{
+        const s=document.createElement('span'); s.className='heart'; s.textContent=ch;
+        s.style.left='50%'; s.style.top='54%'; s.style.setProperty('--x', x+'px'); s.style.setProperty('--y', y+'px');
+        s.style.animationDelay=(i*60)+'ms'; els.burstbox.appendChild(s);
+      });
+    }
+
+    function ensureAudio(){
+      if(!state.audio){
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(!AC) return null;
+        state.audio = new AC();
+        state.master = state.audio.createGain();
+        state.master.gain.value = 0.9;
+        state.master.connect(state.audio.destination);
+      }
+      return state.audio.resume().then(()=> state.audio);
+    }
+    function osc(freq,type,gain,start,dur,attack=.01,release=.06){
+      const ctx=state.audio; if(!ctx) return;
+      const o=ctx.createOscillator(); const g=ctx.createGain(); const f=ctx.createBiquadFilter();
+      f.type='lowpass'; f.frequency.value=1700; o.type=type; o.frequency.setValueAtTime(freq, start);
+      g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(gain,start+attack); g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+      o.connect(f).connect(g).connect(state.master); o.start(start); o.stop(start+dur+release);
+    }
+    function noise(start,dur,gain=.004,band=950){
+      const ctx=state.audio; if(!ctx) return;
+      const buffer=ctx.createBuffer(1, Math.floor(ctx.sampleRate*dur), ctx.sampleRate);
+      const data=buffer.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
+      const src=ctx.createBufferSource(); const bp=ctx.createBiquadFilter(); const g=ctx.createGain();
+      bp.type='bandpass'; bp.frequency.value=band; bp.Q.value=.7; src.buffer=buffer;
+      g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(gain,start+.01); g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+      src.connect(bp).connect(g).connect(state.master); src.start(start); src.stop(start+dur+.03);
+    }
+    function purrSound(){ if(!state.soundOn||!state.audio) return; const t=state.audio.currentTime; osc(140,'triangle',.024,t,.22,.02); noise(t,.18,.003,260); osc(156,'triangle',.02,t+.18,.2,.02); noise(t+.18,.16,.003,300); osc(148,'triangle',.018,t+.36,.2,.02); }
+    function wheekSound(){ if(!state.soundOn||!state.audio) return; const t=state.audio.currentTime; osc(480,'sine',.02,t,.12,.02); osc(610,'sine',.022,t+.13,.12,.02); noise(t+.02,.06,.002,1200); }
+    function munchSound(){ if(!state.soundOn||!state.audio) return; const t=state.audio.currentTime; noise(t,.08,.003,800); noise(t+.12,.07,.0028,880); noise(t+.24,.08,.003,760); }
+    function sleepySound(){ if(!state.soundOn||!state.audio) return; const t=state.audio.currentTime; osc(220,'sine',.006,t,.22,.04); osc(198,'sine',.005,t+.26,.22,.04); }
+    function blowSound(){ if(!state.soundOn||!state.audio) return; const t=state.audio.currentTime; noise(t,.16,.006,600); }
+
+    async function enableSound(){ await ensureAudio(); state.soundOn=true; state.soundBtn.textContent='Звук включён'; wheekSound(); sync(); }
+
+    function setScene(mode, user=false){
+      state.scene=mode; resetVisual();
+      if(mode==='relax'){ state.mood='спокойная'; state.hunger=clamp(state.hunger-2,52,100); setBubble('я рядом'); }
+      if(mode==='pet'){ state.mood='довольная'; els.petWrap.classList.add('petting','pet'); setBubble('мягко урчит'); hearts('❤'); purrSound(); }
+      if(mode==='feed'){ state.mood='радуется'; state.hunger=94; els.petWrap.classList.add('feed'); setBubble('ви-и! хрум-хрум'); hearts('✦'); wheekSound(); setTimeout(munchSound, 220); setTimeout(munchSound, 520); }
+      if(mode==='house'){ state.mood='в домике'; els.petWrap.classList.add('hide'); setBubble('я спрячусь'); }
+      if(mode==='sleep'){ state.mood='сонная'; els.eyeEl.classList.add('closed'); setBubble('тихо сопит'); sleepySound(); }
+      if(mode==='play'){ state.mood='весёлая'; els.petWrap.classList.add('play'); setBubble('рада тебе'); hearts('✦'); wheekSound(); }
+      sync();
+      if(user && mode !== 'pet') {
+        clearTimeout(state.petTimeout);
+        state.petTimeout = setTimeout(()=>{ if(state.scene===mode) { state.scene='relax'; setScene('relax'); } }, mode==='sleep' ? 4200 : 3000);
+      }
+    }
+
+    function startPetting(){ clearTimeout(state.petTimeout); state.petting=true; setScene('pet'); }
+    function stopPetting(){ state.petting=false; state.petTimeout=setTimeout(()=> setScene('relax'), 700); }
+
+    async function toggleMic(){
+      if(state.micOn){ stopMic(); return; }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        await ensureAudio();
+        const src = state.audio.createMediaStreamSource(stream);
+        const analyser = state.audio.createAnalyser(); analyser.fftSize = 512; src.connect(analyser);
+        state.micStream=stream; state.analyser=analyser; state.micOn=true; setBubble('можно подуть'); sync();
+        const data = new Uint8Array(analyser.fftSize);
+        const tick = () => {
+          if(!state.micOn) return;
+          analyser.getByteTimeDomainData(data);
+          let peak=0; for(let i=0;i<data.length;i++){ const v=Math.abs(data[i]-128); if(v>peak) peak=v; }
+          if(peak>24 && !state.blowCooldown){ state.blowCooldown=true; blowReact(); setTimeout(()=> state.blowCooldown=false, 1200); }
+          state.micRAF=requestAnimationFrame(tick);
+        };
+        tick();
+      } catch(e) {
+        setBubble('микрофон не дался');
+      }
+    }
+    function stopMic(){
+      state.micOn=false; if(state.micRAF) cancelAnimationFrame(state.micRAF); if(state.micStream) state.micStream.getTracks().forEach(t=>t.stop()); state.micStream=null; state.analyser=null; setBubble('микрофон выключен'); sync();
+    }
+    function blowReact(){
+      els.petWrap.classList.remove('hide'); els.petWrap.classList.add('play'); state.mood='оживилась'; setBubble('ой! я почувствовала'); hearts('✦'); blowSound(); sync(); setTimeout(()=> setScene('relax'), 1200);
+    }
+
+    els.soundBtn.addEventListener('click', enableSound);
+    els.blowBtn.addEventListener('click', toggleMic);
+    els.controls.forEach(btn=> btn.addEventListener('click', ()=> setScene(btn.dataset.mode, true)));
+    els.touch.addEventListener('pointerdown', async ()=>{ if(!state.soundOn) await enableSound(); startPetting(); });
+    els.touch.addEventListener('pointermove', ()=>{ if(state.petting) purrSound(); });
+    ['pointerup','pointerleave','pointercancel'].forEach(ev=> els.touch.addEventListener(ev, stopPetting));
+
+    setScene('relax'); sync();
+  </script>
+</body>
+</html>
