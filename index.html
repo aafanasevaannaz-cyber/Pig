@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Свинка-дружок</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="app" id="appRoot">
+    <div class="topbar">
+      <div class="title">
+        <h1>Свинка-дружок</h1>
+        <p>антистресс-дружок, который просто рядом</p>
+      </div>
+      <div class="top-actions">
+        <button class="tiny-btn" id="toggleModeBtn" aria-label="Переключить режим">Авто</button>
+      </div>
+    </div>
+
+    <main class="scene-wrap">
+      <section class="scene-card">
+        <div class="scene-bg"></div>
+        <div class="status-pill" id="statusPill">Спокойная и сытая</div>
+
+        <div class="house" id="house">
+          <div class="house-hole"></div>
+        </div>
+
+        <div class="hay"></div>
+        <div class="bowl"></div>
+
+        <button class="pig-area" id="pigArea" aria-label="Погладить свинку">
+          <div class="pig shadow"></div>
+          <div class="pig" id="pig">
+            <div class="ear ear-left"></div>
+            <div class="ear ear-right"></div>
+            <div class="body"></div>
+            <div class="cheek cheek-left"></div>
+            <div class="cheek cheek-right"></div>
+            <div class="eye eye-left"></div>
+            <div class="eye eye-right"></div>
+            <div class="nose"></div>
+            <div class="foot foot-front"></div>
+            <div class="foot foot-back"></div>
+          </div>
+        </button>
+
+        <div class="ambient-text" id="ambientText">Она тихо живёт рядом.</div>
+      </section>
+    </main>
+
+    <section class="panel stats-panel">
+      <div class="stat-row">
+        <span>Сытость</span>
+        <div class="meter"><i id="hungerMeter"></i></div>
+      </div>
+      <div class="stat-row">
+        <span>Спокойствие</span>
+        <div class="meter calm"><i id="calmMeter"></i></div>
+      </div>
+      <div class="mini-note" id="miniNote">По умолчанию всё хорошо. Здесь ничего не ломается.</div>
+    </section>
+
+    <section class="panel control-panel">
+      <div class="control-grid">
+        <button class="action-btn" data-scene="relax">Просто рядом</button>
+        <button class="action-btn" data-scene="pet">Гладить</button>
+        <button class="action-btn" data-scene="feed">Покормить</button>
+        <button class="action-btn" data-scene="hide">Домик</button>
+        <button class="action-btn" data-scene="sleep">Сон</button>
+        <button class="action-btn" data-scene="happy">Милая радость</button>
+      </div>
+    </section>
+
+    <footer class="watermark" id="watermark"></footer>
+  </div>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
