@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<title>Свинка-дружок</title>
+<style>
+:root{
+  --bg1:#f7efe6; --bg2:#ebdfd0; --bg3:#dcc9b6;
+  --ink:#302722; --muted:#79665c;
+  --glass:rgba(255,255,255,.58); --line:rgba(255,255,255,.64);
+  --shadow:0 24px 60px rgba(79,58,43,.14);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 760px at 50% -10%, rgba(255,255,255,.62), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+}
+.app{min-height:100vh;max-width:460px;margin:0 auto;padding:18px 14px calc(82px + env(safe-area-inset-bottom,0px));display:grid;grid-template-rows:auto auto 1fr auto auto;gap:12px}
+.glass{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:var(--glass);border:1px solid var(--line);box-shadow:var(--shadow)}
+.topbar{border-radius:24px;padding:14px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.title h1{margin:0;font-size:20px;line-height:1.05}
+.title p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.pill{border-radius:999px;background:rgba(255,255,255,.82);padding:10px 14px;color:var(--muted);font-size:12px}
+.scene{position:relative;min-height:560px;border-radius:34px;overflow:hidden;background:linear-gradient(180deg,#f8f2eb,#eadfd2 54%,#dcc6b4)}
+.scene.feed{background:linear-gradient(180deg,#f3f4ea,#dde5cf 55%,#c7d1b6)}
+.scene.house{background:linear-gradient(180deg,#f5eadf,#e6d4bc 54%,#cfb08d)}
+.scene.sleep{background:linear-gradient(180deg,#dbe1ef,#bcc7de 56%,#9caac4)}
+.scene.play{background:linear-gradient(180deg,#faefe8,#eed8cb 54%,#ddc2ad)}
+.glow{position:absolute; inset:0; background:radial-gradient(260px 160px at 50% 12%,rgba(255,255,255,.55),transparent 70%)}
+.bubble{position:absolute;top:18px;left:50%;transform:translateX(-50%);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.84);box-shadow:0 8px 24px rgba(0,0,0,.08);font-size:13px;z-index:5}
+.ground{position:absolute;left:18px;right:18px;bottom:18px;height:124px;border-radius:999px;background:rgba(255,255,255,.24)}
+.house{position:absolute;left:24px;bottom:36px;width:152px;height:118px;border-radius:40px 40px 24px 24px;background:linear-gradient(180deg,#e2ba89,#be8d58);box-shadow:0 22px 34px rgba(96,64,24,.18);opacity:.14;transition:.35s var(--ease)}
+.scene.house .house,.scene.sleep .house{opacity:.92}
+.house::after{content:'';position:absolute;left:44px;top:46px;width:68px;height:58px;border-radius:30px 30px 22px 22px;background:rgba(94,58,29,.52)}
+.hay{position:absolute;right:26px;bottom:52px;width:84px;height:46px;border-radius:24px 24px 18px 18px;background:repeating-linear-gradient(100deg,#d1b36a 0 5px,#e2c575 5px 10px,#d8bb71 10px 15px);opacity:.9}
+.bowl{position:absolute;left:46px;bottom:48px;width:86px;height:40px;border-radius:0 0 32px 32px;background:linear-gradient(180deg,#d9e4ce,#a8b98d)}
+.bowl::before{content:'';position:absolute;left:-2px;right:-2px;top:-10px;height:16px;border-radius:999px;background:linear-gradient(180deg,#f7fbf2,#d1dfbf)}
+.veg{position:absolute;left:74px;bottom:80px;width:26px;height:18px;background:#7fb867;border-radius:16px 16px 2px 16px;transform:rotate(-18deg);box-shadow:12px -2px 0 #95ca7b}
+.pet-wrap{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:min(95%,430px);z-index:3;transition:transform .35s var(--ease),opacity .35s var(--ease),filter .35s var(--ease)}
+.scene.house .pet-wrap{transform:translateX(calc(-50% - 48px)) scale(.92);opacity:.22}
+.scene.feed .pet-wrap{transform:translateX(calc(-50% - 10px))}
+.scene.play .pet-wrap{transform:translateX(calc(-50% + 10px)) translateY(-4px) scale(1.02)}
+.scene.pet .pet-wrap{transform:translateX(-50%) scale(1.02)}
+.scene.sleep .pet-wrap{transform:translateX(-50%) translateY(12px) scale(.985);filter:saturate(.84)}
+.pet-image{display:block;width:100%;height:auto;pointer-events:none;user-select:none;filter:drop-shadow(0 18px 24px rgba(70,52,38,.16));transform-origin:50% 82%;animation:breathe 3.4s ease-in-out infinite,sway 7.2s ease-in-out infinite}
+.scene.pet .pet-image{animation:breathePet 1.15s ease-in-out infinite,sway 6.4s ease-in-out infinite}
+.scene.sleep .pet-image{animation:sleepBreathe 5s ease-in-out infinite}
+.scene.play .pet-image{animation:breathe 3s ease-in-out infinite,sway 4.8s ease-in-out infinite}
+.pet-wrap.wiggle{animation:wiggle .55s ease-in-out}
+.pet-wrap.happy-jump{animation:happyJump .9s ease}
+.touch{position:absolute;inset:0;border:none;background:transparent;z-index:4}
+.burst{position:absolute;inset:0;pointer-events:none;z-index:6}
+.heart{position:absolute;font-size:18px;opacity:0;animation:burst2 1.15s ease forwards}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric{border-radius:22px;padding:12px}
+.metric label{display:block;font-size:11px;color:var(--muted)}
+.metric strong{display:block;margin-top:4px;font-size:14px}
+.controls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ctrl{border:none;border-radius:20px;padding:14px 12px;text-align:left;background:rgba(255,255,255,.68);font:inherit;color:var(--ink);min-height:70px}
+.ctrl small{display:block;margin-top:4px;font-size:11px;color:var(--muted)}
+.ctrl.active{background:rgba(203,141,105,.22)}
+.watermark{position:fixed;right:16px;bottom:12px;font-size:11px;letter-spacing:.08em;color:rgba(47,39,34,.38);pointer-events:none}
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.014)}}
+@keyframes breathePet{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.02)}}
+@keyframes sleepBreathe{0%,100%{transform:translateY(7px) scale(.985)}50%{transform:translateY(4px) scale(.997)}}
+@keyframes sway{0%,100%{rotate:-1deg}50%{rotate:1deg}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-1px)}80%{transform:translateX(1px)}}
+@keyframes happyJump{0%,100%{transform:translateX(-50%) translateY(0)}35%{transform:translateX(-50%) translateY(-12px)}60%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes burst2{0%{opacity:0;transform:translate(0,0) scale(.55)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.2)}}
+@media (max-width:390px){.stats{grid-template-columns:repeat(2,1fr)}.scene{min-height:510px}.pet-wrap{bottom:0;width:min(96%,360px)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar glass">
+    <div class="title">
+      <h1>Свинка-дружок</h1>
+      <p>анимешная и уже двигается</p>
+    </div>
+    <div class="pill" id="modePill">Спокойная и сытая</div>
+  </div>
+  <div class="scene glass relax" id="scene">
+    <div class="glow"></div>
+    <div class="bubble" id="bubble">я рядом</div>
+    <div class="house"></div>
+    <div class="hay"></div>
+    <div class="bowl"></div>
+    <div class="veg"></div>
+    <div class="ground"></div>
+    <div class="burst" id="burst"></div>
+    <div class="pet-wrap" id="petWrap">
+      <img class="pet-image" alt="Свинка" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAC5kAAAdcCAYAAAD7P1bBAAAAOXRFWHRTb2Z0d2FyZQBwYWludC5uZXQgNS4wLjEzQzN0NwAAIABJREFUeF7svQe8nOW1Pv42M12j9957WWUvtQu7jBdIIIQQQ8sUv4iiR1GjYhuN7W7tYjGNbbHxtnZRrLHFxvGW1A4aE5q6JEltF7GxxkgIAdOk93q53DPN9Mxk5vfH4e6TnqW7u6u7u7u6/+m4xjNnZuecM0+fP7/3fN4vvTd3d1cBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA..." />
+    </div>
+    <button class="touch" id="touch" aria-label="Погладить свинку"></button>
+  </div>
+  <div class="stats">
+    <div class="metric glass"><label>сытость</label><strong id="hungerLabel">сытая</strong></div>
+    <div class="metric glass"><label>настроение</label><strong id="moodLabel">спокойная</strong></div>
+    <div class="metric glass"><label>стиль</label><strong>аниме</strong></div>
+  </div>
+  <div class="controls" id="controls">
+    <button class="ctrl active" data-mode="relax">Просто рядом<small>тихо дышит и качается</small></button>
+    <button class="ctrl" data-mode="pet">Гладить<small>чуть дрожит от удовольствия</small></button>
+    <button class="ctrl" data-mode="feed">Покормить<small>оживает и двигается к еде</small></button>
+    <button class="ctrl" data-mode="house">Домик<small>уходит отдыхать</small></button>
+    <button class="ctrl" data-mode="sleep">Сон<small>очень медленное дыхание</small></button>
+    <button class="ctrl" data-mode="play">Милая радость<small>лёгкий подпрыг</small></button>
+  </div>
+  <div class="watermark">@parchaipodusham</div>
+</div>
+<script>
+const els={scene:document.getElementById('scene'),bubble:document.getElementById('bubble'),modePill:document.getElementById('modePill'),moodLabel:document.getElementById('moodLabel'),hungerLabel:document.getElementById('hungerLabel'),controls:[...document.querySelectorAll('#controls .ctrl')],touch:document.getElementById('touch'),burst:document.getElementById('burst'),petWrap:document.getElementById('petWrap')};
+const modes={relax:{bubble:'я рядом',mood:'спокойная',hunger:'сытая',pill:'Спокойная и сытая'},pet:{bubble:'нравится поглаживание',mood:'довольная',hunger:'сытая',pill:'Гладишь — ей хорошо'},feed:{bubble:'радуется еде',mood:'радуется',hunger:'очень сытая',pill:'Покормили — довольна'},house:{bubble:'спряталась в домик',mood:'в домике',hunger:'сытая',pill:'Домик и отдых'},sleep:{bubble:'тихо засыпает',mood:'сонная',hunger:'сытая',pill:'Сонный режим'},play:{bubble:'маленькая радость',mood:'весёлая',hunger:'чуть голодная',pill:'Милая радость'}};
+function hearts(char='❤'){els.burst.innerHTML='';[[24,-26],[-18,-34],[-42,-14],[42,-16]].forEach(([x,y],i)=>{const s=document.createElement('span');s.className='heart';s.textContent=char;s.style.left='50%';s.style.top='54%';s.style.setProperty('--x',x+'px');s.style.setProperty('--y',y+'px');s.style.animationDelay=(i*60)+'ms';els.burst.appendChild(s);});}
+function wiggle(){if(els.scene.classList.contains('sleep')) return;els.petWrap.classList.remove('wiggle');void els.petWrap.offsetWidth;els.petWrap.classList.add('wiggle');setTimeout(()=>els.petWrap.classList.remove('wiggle'),550);}
+function bounce(){els.petWrap.classList.remove('happy-jump');void els.petWrap.offsetWidth;els.petWrap.classList.add('happy-jump');setTimeout(()=>els.petWrap.classList.remove('happy-jump'),900);}
+function setMode(mode){els.scene.className='scene glass '+mode;const d=modes[mode];els.bubble.textContent=d.bubble;els.modePill.textContent=d.pill;els.moodLabel.textContent=d.mood;els.hungerLabel.textContent=d.hunger;els.controls.forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===mode));if(mode==='pet'){hearts('❤');wiggle();}if(mode==='feed'){hearts('✦');setTimeout(wiggle,120);}if(mode==='play'){hearts('✦');bounce();}if(mode==='relax'||mode==='house'||mode==='sleep') els.burst.innerHTML='';}
+els.controls.forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));els.touch.addEventListener('pointerdown',()=>setMode('pet'));['pointerup','pointerleave','pointercancel'].forEach(ev=>els.touch.addEventListener(ev,()=>setTimeout(()=>setMode('relax'),700)));setMode('relax');setInterval(()=>{ if(!els.scene.classList.contains('sleep') && !els.scene.classList.contains('house')) wiggle(); }, 5200);
+</script>
+</body>
+</html>
