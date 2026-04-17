@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Свинка-дружок</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app">
+  <div class="card top">
+    <div>
+      <h1>Свинка-дружок</h1>
+      <p>антистресс‑тамагочи, который просто рядом</p>
+    </div>
+    <div class="pill" id="modePill">Спокойная и сытая</div>
+  </div>
+
+  <div class="scene card relax" id="scene">
+    <div class="decor glow"></div>
+    <div class="bubble" id="bubble">я рядом</div>
+    <div class="decor house"></div>
+    <div class="decor hay"></div>
+    <div class="decor bowl"></div>
+    <div class="decor veg"></div>
+    <div class="decor ground"></div>
+    <div class="burst" id="burst"></div>
+
+    <div class="pet-wrap" id="petWrap">
+      <div class="pet-shadow decor"></div>
+      <img class="pet-body" alt="Свинка" src="data:image/webp;base64,UklGRiJ5AQBXRUJQVlA4IBZ5AQAwygCdASrSAr8CPm02mEikIyIhJAgAsBIJaQAAbPkM+M/ANiW4iP7/3zlmV5cUH11prQ2H+B/1wvt+j/b7X9A2/O9z9qkLx2w+2/L4n3w6n1I1l3+17a4mTr3m1f9JQj6M2pm5d7srjYfL+4+jg/Yd9T9j9T3l0DzJH3z+YcS6L6j+uZ+K+K0U2nq1mQ6qvYQ0Wb0Wv7gZz9vU9Y9Vw5V8BzQ2W4Q0f0a8Lw6b0O3u4o6u3g6d1x2J3B5L4E2l1D2G4r3j4b4Y2A5E3e5r5N3c4N5u4g5v4y5l5E6x5R5x4T5Q5o4W5l4V4f4Q4c4R4S4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4w4u4t4s4r4q4p4o4n4m4l4k4j4i4h4g4f4e4d4c4b4a4Z4Y4X4W4V4U4T4S4R4Q4P4O4N4M4L4K4J4I4H4G4F4E4D4C4B4A4A4B4C4D4E4F4G4H4I4J4K4L4M4N4O4P4Q4R4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4z4y4x4w4v4u4t4s4r4q4p4o4n4m4l4k4j4i4h4g4f4e4d4c4b4a4Z4Y4X4W4V4U4T4S4R4Q4P4O4N4M4L4K4J4I4H4G4F4E4D4C4B4A4B4C4D4E4F4G4H4I4J4K4L4M4N4O4P4Q4R4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4wEA/v0AA/vuUAAA">
+      <div class="parts">
+        <div class="ear left"></div>
+        <div class="ear right"></div>
+        <div class="eyelid left"></div>
+        <div class="eyelid right"></div>
+        <div class="nose"></div>
+        <div class="paw left"><i></i></div>
+        <div class="paw mid"><i></i></div>
+        <div class="paw right"><i></i></div>
+      </div>
+      <button class="pet-hitbox" id="petHitbox" aria-label="Погладить свинку"></button>
+      <div class="touch-caption">можно гладить</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card metric"><label>сытость</label><strong id="hungerLabel">сытая</strong></div>
+    <div class="card metric"><label>настроение</label><strong id="moodLabel">спокойная</strong></div>
+    <div class="card metric"><label>формат</label><strong>антистресс</strong></div>
+  </div>
+
+  <div class="controls" id="controls">
+    <button class="ctrl active" data-mode="relax">Просто рядом<small>тихо дышит и живёт рядом</small></button>
+    <button class="ctrl" data-mode="pet">Гладить<small>урчит и довольно дрожит</small></button>
+    <button class="ctrl" data-mode="feed">Покормить<small>тянется к миске и радуется</small></button>
+    <button class="ctrl" data-mode="house">Домик<small>уходит отдыхать без тревоги</small></button>
+    <button class="ctrl" data-mode="sleep">Сон<small>медленное дыхание и моргание</small></button>
+    <button class="ctrl" data-mode="play">Милая радость<small>ушки оживают и подпрыг</small></button>
+  </div>
+
+  <div class="wm">@parchaipodusham</div>
+</div>
+<script src="./app.js"></script>
+</body>
+</html>
