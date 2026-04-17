@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Свинка-дружок</title>
+<style>
+:root{
+  --bg1:#fff7b8;--bg2:#ffe7a6;--bg3:#f3d98f;
+  --card:rgba(255,255,255,.58);--line:rgba(255,255,255,.64);
+  --ink:#302722;--muted:#79665c;--shadow:0 24px 60px rgba(79,58,43,.14);
+  --cream:#f6f2ea;--brown:#7a4122;--ear:#d89845;--earInner:#b85926;
+  --pink:#eea99e;--soft:#efdfc8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 760px at 50% -10%,rgba(255,255,255,.62),transparent 60%),linear-gradient(180deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+}
+.app{min-height:100vh;max-width:460px;margin:0 auto;padding:18px 14px calc(92px + env(safe-area-inset-bottom,0px));display:grid;grid-template-rows:auto auto 1fr auto auto;gap:12px}
+.card{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:24px}
+.top{padding:14px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center;position:relative;z-index:20}
+h1{margin:0;font-size:20px;line-height:1.05} p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.pill{border-radius:999px;background:rgba(255,255,255,.82);padding:10px 14px;color:var(--muted);font-size:12px;white-space:nowrap}
+.scene{position:relative;min-height:560px;border-radius:34px;overflow:hidden;background:linear-gradient(180deg,#fff7b8,#ffe7a6 48%,#f3d98f);z-index:1}
+.scene.feed{background:linear-gradient(180deg,#fff7b8,#eef4af 48%,#dce39e)}
+.scene.house{background:linear-gradient(180deg,#fff0b5,#f5dda6 48%,#e6c587)}
+.scene.sleep{background:linear-gradient(180deg,#f0f2cf,#d7dde6 48%,#b9c4d9)}
+.scene.play{background:linear-gradient(180deg,#fff4ba,#ffe7a6 48%,#f3d98f)}
+.decor{pointer-events:none}
+.glow{position:absolute;inset:0;background:radial-gradient(340px 200px at 50% 18%,rgba(255,255,255,.55),transparent 70%)}
+.bubble{position:absolute;top:18px;left:50%;transform:translateX(-50%);padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.86);box-shadow:0 8px 24px rgba(0,0,0,.08);font-size:13px;z-index:7}
+.ground{position:absolute;left:22px;right:22px;bottom:16px;height:116px;border-radius:999px;background:rgba(255,248,210,.42)}
+.house{position:absolute;left:26px;bottom:40px;width:132px;height:96px;border-radius:38px 38px 22px 22px;background:#d4b27a;box-shadow:0 18px 28px rgba(96,64,24,.12);opacity:.16;transition:.35s}
+.scene.house .house,.scene.sleep .house{opacity:.95}
+.house:after{content:'';position:absolute;left:36px;top:36px;width:58px;height:48px;border-radius:26px 26px 20px 20px;background:rgba(94,58,29,.45)}
+.hay{position:absolute;right:28px;bottom:52px;width:86px;height:42px;border-radius:24px 24px 18px 18px;background:repeating-linear-gradient(100deg,#dfc474 0 5px,#edd58b 5px 10px,#e1c879 10px 15px);opacity:.92}
+.bowl{position:absolute;left:44px;bottom:48px;width:88px;height:38px;border-radius:0 0 30px 30px;background:linear-gradient(180deg,#cfddc2,#9fb188)}
+.bowl:before{content:'';position:absolute;left:-2px;right:-2px;top:-10px;height:16px;border-radius:999px;background:linear-gradient(180deg,#f9fcf6,#d7e4c7)}
+.veg{position:absolute;left:72px;bottom:78px;width:24px;height:16px;background:#7fb867;border-radius:16px 16px 2px 16px;transform:rotate(-18deg);box-shadow:12px -2px 0 #9bd27f}
+
+.pet-wrap{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(92%,360px);z-index:6;transition:transform .35s ease,opacity .35s ease,filter .35s ease;}
+.scene.feed .pet-wrap{transform:translateX(calc(-50% - 12px))}
+.scene.house .pet-wrap{transform:translateX(calc(-50% - 36px)) scale(.92);opacity:.24}
+.scene.sleep .pet-wrap{transform:translateX(-50%) translateY(8px) scale(.995);filter:saturate(.87)}
+.scene.play .pet-wrap{transform:translateX(calc(-50% + 6px)) translateY(-10px) scale(1.03)}
+.scene.pet .pet-wrap{transform:translateX(-50%) scale(1.02)}
+.pet-shadow{position:absolute;left:18%;right:18%;bottom:8px;height:24px;border-radius:999px;background:rgba(122,90,49,.16);filter:blur(8px);animation:shadowBreath 3.2s ease-in-out infinite}
+.pet-body{display:block;width:100%;height:auto;filter:drop-shadow(0 16px 20px rgba(70,52,38,.14));transform-origin:50% 82%;animation:breathe 3.2s ease-in-out infinite,sway 6.2s ease-in-out infinite;position:relative;z-index:1}
+.scene.pet .pet-body{animation:breathePet 1s ease-in-out infinite,sway 5.2s ease-in-out infinite}
+.scene.sleep .pet-body{animation:sleepBreathe 5.1s ease-in-out infinite}
+.scene.play .pet-body{animation:breathe 2.7s ease-in-out infinite,sway 4.5s ease-in-out infinite}
+.pet-wrap.wiggle{animation:petWiggle .34s ease-in-out}
+.pet-wrap.jump{animation:jump .72s ease}
+
+.parts{position:absolute;inset:0;pointer-events:none;z-index:2}
+.ear{position:absolute;background:var(--ear);border:4px solid var(--brown);border-radius:50%;box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
+.ear:after{content:'';position:absolute;inset:24% 20%;background:var(--earInner);border-radius:50%}
+.ear.left{width:14.5%;height:15%;left:24.8%;top:28.2%;transform-origin:68% 76%;animation:earIdleL 6s ease-in-out infinite}
+.ear.right{width:14.5%;height:15%;right:25.2%;top:28.2%;transform-origin:32% 76%;animation:earIdleR 6s ease-in-out infinite}
+.scene.pet .ear.left,.scene.play .ear.left{animation:earHappyL .9s ease-in-out infinite}
+.scene.pet .ear.right,.scene.play .ear.right{animation:earHappyR .9s ease-in-out infinite}
+.scene.sleep .ear{animation:none;transform:rotate(0deg)}
+
+.eyelid{position:absolute;background:var(--cream);border-radius:999px;opacity:0;transition:opacity .12s ease,transform .12s ease}
+.eyelid.left{left:34.9%;top:53.1%;width:8.2%;height:4.4%;transform:scaleY(.2)}
+.eyelid.right{left:56.8%;top:53.1%;width:8.2%;height:4.4%;transform:scaleY(.2)}
+.pet-wrap.blink .eyelid{opacity:1;transform:scaleY(1)}
+.scene.sleep .eyelid{opacity:1;transform:scaleY(1)}
+
+.nose{position:absolute;left:48.3%;top:59%;width:4%;height:2.8%;background:var(--pink);border-radius:50% 50% 60% 60%;transform-origin:center;animation:noseTwitch 4.6s ease-in-out infinite}
+.nose:before,.nose:after{content:'';position:absolute;top:42%;width:10%;height:16%;background:#7d5d52;border-radius:50%}
+.nose:before{left:32%} .nose:after{right:32%}
+
+.paw{position:absolute;bottom:9.3%;width:10.4%;height:8.4%;background:var(--pink);border-radius:45% 45% 55% 55%;border:2px solid rgba(189,111,90,.38)}
+.paw.left{left:31.3%} .paw.mid{left:46%} .paw.right{right:19.2%}
+.paw:before,.paw:after,.paw i{content:'';position:absolute;bottom:16%;width:10%;height:28%;background:rgba(183,105,87,.55);border-radius:999px}
+.paw:before{left:26%} .paw i{left:45%} .paw:after{left:64%}
+.paw i{display:block}
+.paw-mask{position:absolute;left:23%;right:14%;bottom:6%;height:14%;background:linear-gradient(180deg,rgba(255,230,180,0),rgba(255,230,180,.0));opacity:0}
+
+.pet-hitbox{position:absolute;inset:18% 18% 5% 18%;border:0;background:transparent;cursor:pointer;z-index:10}
+.touch-caption{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);font-size:11px;color:rgba(48,39,34,.42);pointer-events:none;z-index:11}
+
+.stats,.controls,.top{position:relative;z-index:20}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric{padding:12px;border-radius:22px}
+.metric label{display:block;font-size:11px;color:var(--muted)} .metric strong{display:block;margin-top:4px;font-size:14px}
+.controls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ctrl{border:none;border-radius:20px;padding:14px 12px;text-align:left;background:rgba(255,255,255,.68);font:inherit;color:var(--ink);min-height:70px;cursor:pointer}
+.ctrl small{display:block;margin-top:4px;font-size:11px;color:var(--muted)} .ctrl.active{background:rgba(203,141,105,.22)}
+.wm{position:fixed;right:16px;bottom:12px;font-size:11px;letter-spacing:.08em;color:rgba(47,39,34,.38);pointer-events:none}
+.burst{position:absolute;inset:0;pointer-events:none;z-index:12}
+.heart{position:absolute;font-size:18px;opacity:0;animation:burst2 1.15s ease forwards}
+
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.016)}}
+@keyframes breathePet{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.024)}}
+@keyframes sleepBreathe{0%,100%{transform:translateY(6px) scale(.99)}50%{transform:translateY(3px) scale(.997)}}
+@keyframes sway{0%,100%{rotate:-1deg}50%{rotate:1deg}}
+@keyframes petWiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
+@keyframes jump{0%,100%{transform:translateX(-50%) translateY(0)}35%{transform:translateX(-50%) translateY(-12px)}60%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes shadowBreath{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.04)}}
+@keyframes burst2{0%{opacity:0;transform:translate(0,0) scale(.55)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.2)}}
+@keyframes noseTwitch{0%,88%,100%{transform:translateX(0)}90%{transform:translateX(-1px)}92%{transform:translateX(1px)}94%{transform:translateX(-1px)}96%{transform:translateX(0)}}
+@keyframes earIdleL{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-3deg)}}
+@keyframes earIdleR{0%,100%{transform:rotate(0deg)}50%{transform:rotate(3deg)}}
+@keyframes earHappyL{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-10deg)}}
+@keyframes earHappyR{0%,100%{transform:rotate(0deg)}50%{transform:rotate(10deg)}}
+
+@media (max-width:390px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .scene{min-height:500px}
+  .pet-wrap{width:min(94%,300px)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="card top">
+    <div><h1>Свинка-дружок</h1><p>антистресс‑тамагочи, который просто рядом</p></div>
+    <div class="pill" id="modePill">Спокойная и сытая</div>
+  </div>
+
+  <div class="scene card relax" id="scene">
+    <div class="decor glow"></div>
+    <div class="bubble" id="bubble">я рядом</div>
+    <div class="decor house"></div>
+    <div class="decor hay"></div>
+    <div class="decor bowl"></div>
+    <div class="decor veg"></div>
+    <div class="decor ground"></div>
+    <div class="burst" id="burst"></div>
+
+    <div class="pet-wrap" id="petWrap">
+      <div class="pet-shadow decor"></div>
+      <img class="pet-body" alt="Свинка" src="data:image/webp;base64,UklGRiJ5AQBXRUJQVlA4IBZ5AQAwygCdASrSAr8CPm02mEikIyIhJAgAsBIJaQAAbPkM+M/ANiW4iP7/3zlmV5cUH11prQ2H+B/1wvt+j/b7X9A2/O9z9qkLx2w+2/L4n3w6n1I1l3+17a4mTr3m1f9JQj6M2pm5d7srjYfL+4+jg/Yd9T9j9T3l0DzJH3z+YcS6L6j+uZ+K+K0U2nq1mQ6qvYQ0Wb0Wv7gZz9vU9Y9Vw5V8BzQ2W4Q0f0a8Lw6b0O3u4o6u3g6d1x2J3B5L4E2l1D2G4r3j4b4Y2A5E3e5r5N3c4N5u4g5v4y5l5E6x5R5x4T5Q5o4W5l4V4f4Q4c4R4S4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4w4u4t4s4r4q4p4o4n4m4l4k4j4i4h4g4f4e4d4c4b4a4Z4Y4X4W4V4U4T4S4R4Q4P4O4N4M4L4K4J4I4H4G4F4E4D4C4B4A4A4B4C4D4E4F4G4H4I4J4K4L4M4N4O4P4Q4R4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4z4y4x4w4v4u4t4s4r4q4p4o4n4m4l4k4j4i4h4g4f4e4d4c4b4a4Z4Y4X4W4V4U4T4S4R4Q4P4O4N4M4L4K4J4I4H4G4F4E4D4C4B4A4B4C4D4E4F4G4H4I4J4K4L4M4N4O4P4Q4R4S4T4U4V4W4X4Y4Z4a4b4c4d4e4f4g4h4i4j4k4l4m4n4o4p4q4r4s4t4u4v4w4x4y4z4wEA/v0AA/vuUAAA"></div>
+      <div class="parts">
+        <div class="ear left"></div>
+        <div class="ear right"></div>
+        <div class="eyelid left"></div>
+        <div class="eyelid right"></div>
+        <div class="nose"></div>
+        <div class="paw left"><i></i></div>
+        <div class="paw mid"><i></i></div>
+        <div class="paw right"><i></i></div>
+      </div>
+      <button class="pet-hitbox" id="petHitbox" aria-label="Погладить свинку"></button>
+      <div class="touch-caption">можно гладить</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card metric"><label>сытость</label><strong id="hungerLabel">сытая</strong></div>
+    <div class="card metric"><label>настроение</label><strong id="moodLabel">спокойная</strong></div>
+    <div class="card metric"><label>формат</label><strong>антистресс</strong></div>
+  </div>
+
+  <div class="controls" id="controls">
+    <button class="ctrl active" data-mode="relax">Просто рядом<small>тихо дышит и живёт рядом</small></button>
+    <button class="ctrl" data-mode="pet">Гладить<small>урчит и довольно дрожит</small></button>
+    <button class="ctrl" data-mode="feed">Покормить<small>тянется к миске и радуется</small></button>
+    <button class="ctrl" data-mode="house">Домик<small>уходит отдыхать без тревоги</small></button>
+    <button class="ctrl" data-mode="sleep">Сон<small>медленное дыхание и моргание</small></button>
+    <button class="ctrl" data-mode="play">Милая радость<small>ушки оживают и подпрыг</small></button>
+  </div>
+
+  <div class="wm">@parchaipodusham</div>
+</div>
+
+<script>
+const els = {
+  scene: document.getElementById('scene'),
+  bubble: document.getElementById('bubble'),
+  modePill: document.getElementById('modePill'),
+  moodLabel: document.getElementById('moodLabel'),
+  hungerLabel: document.getElementById('hungerLabel'),
+  controls: [...document.querySelectorAll('#controls .ctrl')],
+  burst: document.getElementById('burst'),
+  petWrap: document.getElementById('petWrap'),
+  petHitbox: document.getElementById('petHitbox')
+};
+
+const state = {
+  mode: 'relax',
+  hunger: 0.12,
+  calm: 0.92,
+  joy: 0.58,
+  sleepy: 0.18,
+  blinkTimer: null
+};
+
+const modes = {
+  relax: { bubble:'я рядом', mood:'спокойная', hunger:'сытая', pill:'Спокойная и сытая' },
+  pet:   { bubble:'нравится поглаживание', mood:'довольная', hunger:'сытая', pill:'Гладишь — ей хорошо' },
+  feed:  { bubble:'радуется еде', mood:'радуется', hunger:'очень сытая', pill:'Покормили — довольна' },
+  house: { bubble:'спряталась в домик', mood:'в домике', hunger:'сытая', pill:'Домик и отдых' },
+  sleep: { bubble:'тихо засыпает', mood:'сонная', hunger:'сытая', pill:'Сонный режим' },
+  play:  { bubble:'маленькая радость', mood:'весёлая', hunger:'чуть голодная', pill:'Милая радость' }
+};
+
+function hearts(char='❤') {
+  els.burst.innerHTML = '';
+  [[24,-26],[-18,-34],[-42,-14],[42,-16]].forEach(([x,y],i) => {
+    const s = document.createElement('span');
+    s.className = 'heart';
+    s.textContent = char;
+    s.style.left = '50%';
+    s.style.top = '54%';
+    s.style.setProperty('--x', x + 'px');
+    s.style.setProperty('--y', y + 'px');
+    s.style.animationDelay = (i * 60) + 'ms';
+    els.burst.appendChild(s);
+  });
+}
+
+function wiggle() {
+  if (els.scene.classList.contains('sleep')) return;
+  els.petWrap.classList.remove('wiggle');
+  void els.petWrap.offsetWidth;
+  els.petWrap.classList.add('wiggle');
+  setTimeout(() => els.petWrap.classList.remove('wiggle'), 340);
+}
+
+function bounce() {
+  els.petWrap.classList.remove('jump');
+  void els.petWrap.offsetWidth;
+  els.petWrap.classList.add('jump');
+  setTimeout(() => els.petWrap.classList.remove('jump'), 720);
+}
+
+function blink() {
+  if (els.scene.classList.contains('house')) return;
+  els.petWrap.classList.add('blink');
+  setTimeout(() => els.petWrap.classList.remove('blink'), 160);
+}
+
+function scheduleBlink() {
+  clearTimeout(state.blinkTimer);
+  const next = els.scene.classList.contains('sleep') ? 2200 : 3200 + Math.random() * 2600;
+  state.blinkTimer = setTimeout(() => {
+    blink();
+    scheduleBlink();
+  }, next);
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  els.scene.className = 'scene card ' + mode;
+  const d = modes[mode];
+  els.bubble.textContent = d.bubble;
+  els.modePill.textContent = d.pill;
+  els.moodLabel.textContent = d.mood;
+  els.hungerLabel.textContent = d.hunger;
+  els.controls.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+  if (mode === 'pet') {
+    hearts('❤');
+    wiggle();
+  }
+  if (mode === 'feed') {
+    hearts('✦');
+    setTimeout(wiggle, 120);
+  }
+  if (mode === 'play') {
+    hearts('✦');
+    bounce();
+  }
+  if (mode === 'relax' || mode === 'house' || mode === 'sleep') {
+    els.burst.innerHTML = '';
+  }
+  scheduleBlink();
+}
+
+els.controls.forEach(btn => btn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  setMode(btn.dataset.mode);
+}));
+
+els.petHitbox.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  setMode('pet');
+});
+['pointerup','pointerleave','pointercancel'].forEach(ev =>
+  els.petHitbox.addEventListener(ev, () => setTimeout(() => {
+    if (state.mode === 'pet') setMode('relax');
+  }, 700))
+);
+
+setMode('relax');
+scheduleBlink();
+setInterval(() => {
+  if (!els.scene.classList.contains('sleep') && !els.scene.classList.contains('house')) wiggle();
+}, 5200);
+</script>
+</body>
+</html>
