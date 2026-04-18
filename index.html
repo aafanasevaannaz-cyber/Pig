@@ -1,23 +1,104 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pig</title>
-  <meta http-equiv="refresh" content="0; url=/app/">
-  <style>
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:Inter,system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#fff7b8,#f3d98f);color:#302722}
-    .card{max-width:560px;margin:24px;padding:24px 22px;border-radius:24px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.8);box-shadow:0 24px 60px rgba(79,58,43,.14)}
-    h1{margin:0 0 8px;font-size:28px} p{margin:0 0 14px;color:#79665c}
-    a{display:inline-block;margin:8px 10px 0 0;padding:10px 14px;border-radius:999px;background:#fff;color:#302722;text-decoration:none}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Свинка-антистресс</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/animations.css">
 </head>
 <body>
-  <div class="card">
-    <h1>Свинка-дружок</h1>
-    <p>Корень проекта теперь ведёт в организованную папку приложения.</p>
-    <a href="/app/">Открыть приложение</a>
-    <a href="/prototypes/live/">Открыть live prototype</a>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>🐷 Свинка-дружок</h1>
+      <p class="subtitle">Твой антистресс-пета</p>
+    </header>
+
+    <main class="app-main">
+      <div class="pet-scene">
+        <div class="pet-container">
+          <div class="pet" id="pet">
+            <div class="pig-body">
+              <div class="pig-head">
+                <div class="pig-ear"></div>
+                <div class="pig-ear"></div>
+                <div class="pig-snout">
+                  <div class="nostril"></div>
+                  <div class="nostril"></div>
+                </div>
+                <div class="pig-eye"></div>
+                <div class="pig-eye"></div>
+              </div>
+              <div class="pig-legs">
+                <div class="pig-leg"></div>
+                <div class="pig-leg"></div>
+                <div class="pig-leg"></div>
+                <div class="pig-leg"></div>
+              </div>
+              <div class="pig-tail"></div>
+            </div>
+          </div>
+          <div class="pet-status">
+            <p class="status-text" id="statusText">Свинка спит...</p>
+            <div class="emotion" id="emotion">😴</div>
+          </div>
+        </div>
+
+        <div class="stats-panel">
+          <div class="stat">
+            <label>Голод</label>
+            <div class="stat-bar">
+              <div class="stat-fill hunger-fill" id="hungerBar"></div>
+            </div>
+            <span id="hungerValue">80%</span>
+          </div>
+          <div class="stat">
+            <label>Счастье</label>
+            <div class="stat-bar">
+              <div class="stat-fill happiness-fill" id="happinessBar"></div>
+            </div>
+            <span id="happinessValue">70%</span>
+          </div>
+          <div class="stat">
+            <label>Энергия</label>
+            <div class="stat-bar">
+              <div class="stat-fill energy-fill" id="energyBar"></div>
+            </div>
+            <span id="energyValue">60%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="feedBtn">
+          🍎 Покормить
+        </button>
+        <button class="btn btn-primary" id="playBtn">
+          🎾 Поиграть
+        </button>
+        <button class="btn btn-primary" id="petBtn">
+          🎀 Погладить
+        </button>
+        <button class="btn btn-secondary" id="sleepBtn">
+          😴 Спать
+        </button>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-item">
+          <span class="label">Состояние:</span>
+          <span id="moodText" class="value">Спит</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Время:</span>
+          <span id="timeText" class="value">00:00</span>
+        </div>
+      </div>
+    </main>
   </div>
+
+  <script src="js/pet-logic.js"></script>
+  <script src="js/ui-manager.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
