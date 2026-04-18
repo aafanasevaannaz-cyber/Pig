@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐹 Морская Свинка | Антистресс Тамагочи</title>
+  <style>
+    :root {
+      --primary: #FFB6D9;
+      --accent: #FF88CC;
+      --text: #654321;
+      --bg: #FFF9E6;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #FFFACD 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .app {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    
+    .header p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    .main {
+      flex: 1;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .scene {
+      background: linear-gradient(180deg, #FFF8DC 0%, #FFE4B5 100%);
+      border-radius: 15px;
+      padding: 25px;
+      border: 2px solid #DDA0DD;
+      text-align: center;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pet-display {
+      width: 220px;
+      height: 200px;
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    /* ===== МОРСКАЯ СВИНКА CSS ===== */
+    .guinea-pig {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* ТЕЛО */
+    .body {
+      position: absolute;
+      width: 140px;
+      height: 110px;
+      background: #FFB6D9;
+      border-radius: 55% 55% 50% 50%;
+      top: 70px;
+      left: 40px;
+      border: 3px solid #654321;
+      box-shadow: inset -4px -4px 8px rgba(0,0,0,0.12);
+    }
+    
+    /* ГОЛОВА */
+    .head {
+      position: absolute;
+      width: 100px;
+      height: 90px;
+      background: #FFB6D9;
+      border-radius: 60% 60% 50% 50%;
+      top: 15px;
+      left: 60px;
+      border: 3px solid #654321;
+      box-shadow: inset -3px -3px 7px rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+    
+    /* УШКИ */
+    .ear {
+      position: absolute;
+      width: 22px;
+      height: 26px;
+      background: #FFB6D9;
+      border-radius: 50%;
+      border: 2.5px solid #654321;
+      top: -10px;
+    }
+    
+    .ear.left { left: 18px; }
+    .ear.right { right: 18px; }
+    
+    .ear::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 12px;
+      background: #FF99BB;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* ГЛАЗА */
+    .eyes {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      top: 22px;
+      padding: 0 18px;
+    }
+    
+    .eye {
+      width: 12px;
+      height: 14px;
+      background: #654321;
+      border-radius: 50%;
+      position: relative;
+    }
+    
+    .eye::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+    }
+    
+    /* ПЯТАЧОК */
+    .snout {
+      position: absolute;
+      width: 36px;
+      height: 24px;
+      background: #FF99BB;
+      border-radius: 50%;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 2.5px solid #654321;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .nostril {
+      width: 5px;
+      height: 5px;
+      background: #654321;
+      border-radius: 50%;
+    }
+    
+    /* РОТ */
+    .mouth {
+      position: absolute;
+      width: 14px;
+      height: 6px;
+      border-bottom: 3px solid #654321;
+      border-radius: 0 0 14px 14px;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    /* ЛАПКИ */
+    .legs {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 22px;
+      gap: 10px;
+    }
+    
+    .leg {
+      width: 18px;
+      height: 40px;
+      background: #FFB6D9;
+      border-radius: 9px;
+      border: 2.5px solid #654321;
+      position: relative;
+    }
+    
+    .leg::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 9px;
+      background: #FF99BB;
+      border: 2.5px solid #654321;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+      bottom: -9px;
+    }
+    
+    /* ХВОСТ */
+    .tail {
+      position: absolute;
+      width: 3px;
+      height: 14px;
+      right: 18px;
+      bottom: 32px;
+      background: #654321;
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+    
+    /* СТАТУСЫ И КНОПКИ */
+    .status {
+      font-size: 32px;
+      margin: 10px 0;
+    }
+    
+    .message {
+      font-size: 13px;
+      color: #654321;
+      font-weight: 600;
+      height: 18px;
+      min-width: 200px;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 12px;
+      background: rgba(255,255,255,0.85);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #DDA0DD;
+    }
+    
+    .stat {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+    }
+    
+    .stat-label {
+      color: #654321;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .stat-bar {
+      height: 12px;
+      background: #E8E8E8;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #DDA0DD;
+      margin-bottom: 4px;
+    }
+    
+    .stat-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.4s ease;
+    }
+    
+    .hunger-fill { background: linear-gradient(90deg, #FF6B6B, #FFB347); }
+    .happy-fill { background: linear-gradient(90deg, #FF69B4, #FF1493); }
+    .energy-fill { background: linear-gradient(90deg, #87CEEB, #4169E1); }
+    
+    .stat-value {
+      font-weight: 700;
+      color: #FF88CC;
+      font-size: 12px;
+    }
+    
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 13px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border: 2px solid var(--accent);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255,136,204,0.3);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #654321;
+      border: 2px solid #DDA0DD;
+    }
+    
+    .btn-secondary:hover {
+      background: #FFE5F0;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    
+    .guinea-pig.wiggle { animation: wiggle 0.4s ease-in-out 3; }
+    .guinea-pig.bounce { animation: bounce 0.6s cubic-bezier(0.68,-0.55,0.265,1.55); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>🐹 Морская Свинка</h1>
+      <p>Твой антистресс-компаньон</p>
+    </div>
+    
+    <div class="main">
+      <div class="scene">
+        <div class="pet-display">
+          <div class="guinea-pig" id="pig">
+            <div class="head">
+              <div class="ear left"></div>
+              <div class="ear right"></div>
+              <div class="eyes">
+                <div class="eye"></div>
+                <div class="eye"></div>
+              </div>
+              <div class="snout">
+                <div class="nostril"></div>
+                <div class="nostril"></div>
+              </div>
+              <div class="mouth"></div>
+            </div>
+            <div class="body"></div>
+            <div class="legs">
+              <div class="leg"></div>
+              <div class="leg"></div>
+              <div class="leg"></div>
+              <div class="leg"></div>
+            </div>
+            <div class="tail"></div>
+          </div>
+        </div>
+        
+        <div class="status" id="emoji">🐹</div>
+        <div class="message" id="message">Морская свинка проснулась...</div>
+      </div>
+      
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">🍎 Голод</span>
+          <div class="stat-bar"><div class="stat-fill hunger-fill" id="hungerBar" style="width: 30%"></div></div>
+          <span class="stat-value" id="hungerVal">30%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">💕 Счастье</span>
+          <div class="stat-bar"><div class="stat-fill happy-fill" id="happyBar" style="width: 70%"></div></div>
+          <span class="stat-value" id="happyVal">70%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">⚡ Энергия</span>
+          <div class="stat-bar"><div class="stat-fill energy-fill" id="energyBar" style="width: 80%"></div></div>
+          <span class="stat-value" id="energyVal">80%</span>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-primary" id="feedBtn">🍎 Покормить</button>
+        <button class="btn btn-primary" id="petBtn">🎀 Погладить</button>
+        <button class="btn btn-primary" id="playBtn">🎾 Поиграть</button>
+        <button class="btn btn-secondary" id="sleepBtn">😴 Спать</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sounds = {
+      wheek: () => {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = 850;
+        osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.2);
+      },
+      purr: () => {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [170, 160, 175, 165].forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.value = f;
+          gain.gain.setValueAtTime(0.05, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.1);
+          osc.stop(ctx.currentTime + i * 0.1 + 0.1);
+        });
+      }
+    };
+
+    const state = {
+      hunger: 30,
+      happiness: 70,
+      energy: 80,
+      sleeping: false
+    };
+
+    function updateUI() {
+      document.getElementById('hungerVal').textContent = Math.round(Math.max(0, 100 - state.hunger)) + '%';
+      document.getElementById('happyVal').textContent = Math.round(state.happiness) + '%';
+      document.getElementById('energyVal').textContent = Math.round(state.energy) + '%';
+      
+      document.getElementById('hungerBar').style.width = Math.max(0, 100 - state.hunger) + '%';
+      document.getElementById('happyBar').style.width = state.happiness + '%';
+      document.getElementById('energyBar').style.width = state.energy + '%';
+
+      if (state.sleeping) {
+        document.getElementById('emoji').textContent = '😴';
+        document.getElementById('message').textContent = 'Морская свинка спит...';
+      } else if (state.happiness > 80) {
+        document.getElementById('emoji').textContent = '🤩';
+        document.getElementById('message').textContent = 'Морская свинка счастлива!';
+      } else if (state.hunger > 70) {
+        document.getElementById('emoji').textContent = '😋';
+        document.getElementById('message').textContent = 'Морская свинка хочет кушать!';
+      } else {
+        document.getElementById('emoji').textContent = '🐹';
+        document.getElementById('message').textContent = 'Морская свинка отдыхает...';
+      }
+    }
+
+    document.getElementById('feedBtn').addEventListener('click', () => {
+      if (state.sleeping) return;
+      state.hunger = Math.max(0, state.hunger - 30);
+      state.happiness = Math.min(100, state.happiness + 8);
+      state.energy = Math.max(0, state.energy - 8);
+      document.getElementById('pig').classList.add('wiggle');
+      setTimeout(() => document.getElementById('pig').classList.remove('wiggle'), 1200);
+      sounds.wheek();
+      updateUI();
+    });
+
+    document.getElementById('petBtn').addEventListener('click', () => {
+      if (state.sleeping) return;
+      state.happiness = Math.min(100, state.happiness + 12);
+      state.energy = Math.max(0, state.energy - 5);
+      document.getElementById('pig').classList.add('wiggle');
+      setTimeout(() => document.getElementById('pig').classList.remove('wiggle'), 1200);
+      sounds.purr();
+      updateUI();
+    });
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+      if (state.sleeping) return;
+      state.happiness = Math.min(100, state.happiness + 20);
+      state.energy = Math.max(0, state.energy - 25);
+      state.hunger = Math.min(100, state.hunger + 12);
+      document.getElementById('pig').classList.add('bounce');
+      setTimeout(() => document.getElementById('pig').classList.remove('bounce'), 600);
+      sounds.wheek();
+      updateUI();
+    });
+
+    document.getElementById('sleepBtn').addEventListener('click', () => {
+      state.sleeping = !state.sleeping;
+      if (state.sleeping) {
+        state.energy = 100;
+        document.getElementById('sleepBtn').textContent = '⬆️ Проснуться';
+      } else {
+        document.getElementById('sleepBtn').textContent = '😴 Спать';
+      }
+      updateUI();
+    });
+
+    setInterval(() => {
+      if (!state.sleeping) {
+        state.hunger = Math.min(100, state.hunger + 0.8);
+        state.energy = Math.max(0, state.energy - 0.6);
+        if (state.hunger > 70) state.happiness = Math.max(0, state.happiness - 0.8);
+        if (state.energy < 30) state.happiness = Math.max(0, state.happiness - 1.2);
+      } else {
+        state.hunger = Math.min(100, state.hunger + 0.3);
+      }
+      updateUI();
+    }, 1500);
+
+    updateUI();
+  </script>
+</body>
+</html>
