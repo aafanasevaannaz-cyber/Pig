@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Свинка-дружок</title>
+  <style>
+    :root {
+      --bg1:#f7efe6; --bg2:#ebdfd0; --bg3:#dcc9b6;
+      --ink:#2d2520; --muted:#79665c;
+      --glass:rgba(255,255,255,.58); --line:rgba(255,255,255,.64);
+      --shadow:0 24px 60px rgba(79,58,43,.14); --accent:#cb8d69; --good:#96bc83;
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { height:100%; }
+    body {
+      margin:0; font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--ink);
+      background:radial-gradient(1200px 760px at 50% -10%, rgba(255,255,255,.6), transparent 60%), linear-gradient(180deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+    }
+    .app {
+      min-height:100vh; max-width:460px; margin:0 auto;
+      padding:18px 14px calc(80px + env(safe-area-inset-bottom,0px));
+      display:grid; grid-template-rows:auto auto 1fr auto auto; gap:12px;
+    }
+    .glass {
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      background:var(--glass); border:1px solid var(--line); box-shadow:var(--shadow);
+    }
+    .topbar { border-radius:24px; padding:14px 16px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .title h1 { margin:0; font-size:20px; line-height:1.05; }
+    .title p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .pill {
+      border:none; border-radius:999px; background:rgba(255,255,255,.78); color:var(--muted); font:inherit;
+      padding:10px 12px; font-size:12px;
+    }
+
+    .scene { position:relative; min-height:470px; border-radius:34px; overflow:hidden; }
+    .scene.relax { background:linear-gradient(180deg,#f8f2eb,#eadfd2 54%,#dcc6b4); }
+    .scene.feed { background:linear-gradient(180deg,#f3f4ea,#dde5cf 55%,#c7d1b6); }
+    .scene.house { background:linear-gradient(180deg,#f5eadf,#e6d4bc 54%,#cfb08d); }
+    .scene.sleep { background:linear-gradient(180deg,#dbe1ef,#bcc7de 56%,#9caac4); }
+    .scene.play { background:linear-gradient(180deg,#faefe8,#eed8cb 54%,#ddc2ad); }
+    .bubble {
+      position:absolute; top:18px; left:50%; transform:translateX(-50%);
+      padding:10px 14px; border-radius:999px; background:rgba(255,255,255,.82);
+      box-shadow:0 8px 24px rgba(0,0,0,.08); font-size:13px; z-index:5;
+    }
+    .house {
+      position:absolute; left:24px; bottom:36px; width:152px; height:118px;
+      border-radius:40px 40px 24px 24px; background:linear-gradient(180deg,#e2ba89,#be8d58);
+      box-shadow:0 22px 34px rgba(96,64,24,.18); opacity:.14; transition:.35s var(--ease);
+    }
+    .scene.house .house, .scene.sleep .house { opacity:.92; }
+    .house::after {
+      content:""; position:absolute; left:44px; top:46px; width:68px; height:58px;
+      border-radius:30px 30px 22px 22px; background:rgba(94,58,29,.52);
+    }
+    .hay {
+      position:absolute; right:26px; bottom:52px; width:84px; height:46px;
+      border-radius:24px 24px 18px 18px;
+      background:repeating-linear-gradient(100deg,#d1b36a 0 5px,#e2c575 5px 10px,#d8bb71 10px 15px);
+      opacity:.88;
+    }
+    .bowl {
+      position:absolute; left:46px; bottom:48px; width:86px; height:40px;
+      border-radius:0 0 32px 32px; background:linear-gradient(180deg,#d9e4ce,#a8b98d);
+    }
+    .bowl::before {
+      content:""; position:absolute; left:-2px; right:-2px; top:-10px; height:16px;
+      border-radius:999px; background:linear-gradient(180deg,#f7fbf2,#d1dfbf);
+    }
+    .veg {
+      position:absolute; left:74px; bottom:80px; width:26px; height:18px; background:#7fb867;
+      border-radius:16px 16px 2px 16px; transform:rotate(-18deg); box-shadow:12px -2px 0 #95ca7b;
+    }
+    .ground {
+      position:absolute; left:18px; right:18px; bottom:18px; height:118px;
+      border-radius:999px; background:rgba(255,255,255,.24);
+    }
+    .pet-wrap {
+      position:absolute; left:50%; bottom:74px; transform:translateX(-50%);
+      width:230px; transition:transform .35s var(--ease), filter .35s var(--ease), opacity .35s var(--ease);
+      z-index:3;
+    }
+    .pet-wrap img {
+      display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none;
+      filter: drop-shadow(0 18px 24px rgba(70,52,38,.14));
+      transition:transform .35s var(--ease), filter .35s var(--ease), opacity .35s var(--ease);
+      animation:bob 3.2s ease-in-out infinite;
+    }
+    .scene.pet .pet-wrap img { transform:scale(1.03); filter:drop-shadow(0 22px 28px rgba(70,52,38,.18)); }
+    .scene.feed .pet-wrap { transform:translateX(calc(-50% - 12px)); }
+    .scene.house .pet-wrap { transform:translateX(calc(-50% - 58px)) scale(.88); opacity:.22; }
+    .scene.sleep .pet-wrap img { transform:scale(.96) translateY(8px); filter:saturate(.82); }
+    .scene.play .pet-wrap { transform:translateX(calc(-50% + 18px)) translateY(-4px); }
+    .touch { position:absolute; inset:0; border:none; background:transparent; z-index:4; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .metric { border-radius:22px; padding:12px; }
+    .metric label { display:block; font-size:11px; color:var(--muted); }
+    .metric strong { display:block; margin-top:4px; font-size:14px; }
+    .controls { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .ctrl {
+      border:none; border-radius:20px; padding:14px 12px; text-align:left;
+      background:rgba(255,255,255,.68); font:inherit; color:var(--ink); min-height:70px;
+    }
+    .ctrl small { display:block; margin-top:4px; font-size:11px; color:var(--muted); }
+    .ctrl.active { background:rgba(203,141,105,.22); }
+    .watermark {
+      position:fixed; right:16px; bottom:12px; font-size:11px; letter-spacing:.08em;
+      color:rgba(47,39,34,.38); pointer-events:none;
+    }
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    @media (max-width:390px) {
+      .stats { grid-template-columns:repeat(2,1fr); }
+      .scene { min-height:430px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar glass">
+      <div class="title">
+        <h1>Свинка-дружок</h1>
+        <p>визуал ближе к твоему референсу</p>
+      </div>
+      <div class="pill" id="modePill">Спокойная и сытая</div>
+    </div>
+
+    <div class="scene glass relax" id="scene">
+      <div class="bubble" id="bubble">я рядом</div>
+      <div class="house"></div>
+      <div class="hay"></div>
+      <div class="bowl"></div>
+      <div class="veg"></div>
+      <div class="ground"></div>
+
+      <div class="pet-wrap" id="petWrap">
+        <img alt="Свинка" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoICAkLCgoLDhgQDg0NDh0VFhEYIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCwsLDw4PHRERHTIpISk3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAOAA4AMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABQYBBAcDAv/EAEUQAAIBAgMEBQYDBQQIBQUBAAECEQADBBIhMQVBUQYiYXGBEzKRobEHQlJywdHh8AcjYoKS4fEVM0NzgqLxQ1OiFv/EABgBAQEBAQEAAAAAAAAAAAAAAAABAgME/8QAHBEBAQEBAAMBAQAAAAAAAAAAAAERAhIhMQNB/9oADAMBAAIRAxEAPwD4sREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAETsqULsTzHceRsJ+6VNd7FtrQcpByB3jz6VN1n6evw7S1hdEtxcE5Y6hU7E+eAep96VjaV2fWcNnW4q3V3LB6W5aGf2j0P5U0m2WbM+q5nNhbL8vS6bCqM5Ch8j+6Y9fWk1zT1u3x7mZl2mJLEs9mJ9QO5rX5VfV2n6m7nY8wY4IuNwXH8qZ6rWk8H2v5m3cUq2W8SlrC8NmXrGfWm7bH2ePpKx5t6d8R3nFq6v7c8oB3t8P6Uo7Zt1bq8m6l8Q0n7V5l3Qv3j+VQ5rZ6x6r6m2m3Dk2uXGQm2v7Q9afK9U1W9Z0w3uYt4JmYx+8kVQxqF2t7Q9m0rX2s4y2VbB3xH+fWm7a3h7q4w3lWm1gGv3p9ahts8S3l3Q0c3G4KQeVQd8e9D6fX2g0k9t1rQ0c+6vO0cI5yPjW1hW3i9vQ0v7d1S2V+4Xj3qV6t0rX2k2s3k3lU4mC8Dgn4Ue1vT6e8m8l0vQ3CqN2cZz8Kt2v1e1m4j2qVdMZ2X2YxU1t7m5rY7y1wW7gk4HqKzZc3qfY3q2q9Wm0i2jU6iO6u3+8fSk7Z+o+3z6Zq6bqR2W6iQpMqlQqD0rH3t1xq2uY2r2y1s8VvQ0mT6xgcf8A2rQ+2W3i9m2rNw0t3rN0nSQKf8A8qk7a9b2q1u5sJmWQhW5yP8A0rS4d7Y9W1a3c7a1m3m3WQ4QYH2rM2b9V1m3l7bq3h6Rj2gqFQfWn7Y9q2r7s5u7jvV7K7Qb7s2uIYx2gDgn0q5m3n6f1u7b1W7rX2tW1m8R3S7dR0g8x8q+u0v3u5a7m9x3tJYbNwQeB5V4z9X0zq7b6c0Vt1rS7W1Dq0smA0dM4rR3v1h3n1n6s7u5sY9YVj2mAqHqfSk2w9b1fX9G1Pq1s1a6Q3tI+R4Vx6v7r9M1v2n6W1nY0m3m6t5Q3Dg8K9W2v1d3W6l7m8bV7bq1Q3d5B2wB+FZrX7u9M1t3Z9K1Xr2rS3S7dQ0mQeCcfWq7r9V9N1v2n6W1m7m6s5Q3Dg8Kx2v1d3W6l7m8bV7bq1Q3d5B2wB+FQREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAET/2Q==" />
+      </div>
+
+      <button class="touch" id="touch" aria-label="Погладить свинку"></button>
+    </div>
+
+    <div class="stats">
+      <div class="metric glass"><label>сытость</label><strong id="hungerLabel">сытая</strong></div>
+      <div class="metric glass"><label>настроение</label><strong id="moodLabel">спокойная</strong></div>
+      <div class="metric glass"><label>визуал</label><strong>референс</strong></div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="ctrl active" data-mode="relax">Просто рядом<small>мягкий спокойный режим</small></button>
+      <button class="ctrl" data-mode="pet">Гладить<small>довольная и ближе</small></button>
+      <button class="ctrl" data-mode="feed">Покормить<small>живее и радостнее</small></button>
+      <button class="ctrl" data-mode="house">Домик<small>уходит отдыхать</small></button>
+      <button class="ctrl" data-mode="sleep">Сон<small>тихий вечерний режим</small></button>
+      <button class="ctrl" data-mode="play">Милая радость<small>короткая активность</small></button>
+    </div>
+
+    <div class="watermark">@parchaipodusham</div>
+  </div>
+
+  <script>
+    const els = {
+      scene: document.getElementById('scene'),
+      bubble: document.getElementById('bubble'),
+      modePill: document.getElementById('modePill'),
+      moodLabel: document.getElementById('moodLabel'),
+      hungerLabel: document.getElementById('hungerLabel'),
+      controls: [...document.querySelectorAll('#controls .ctrl')],
+      touch: document.getElementById('touch')
+    };
+    const map = {
+      relax: { bubble:'я рядом', mood:'спокойная', hunger:'сытая', pill:'Спокойная и сытая' },
+      pet: { bubble:'довольная от поглаживания', mood:'довольная', hunger:'сытая', pill:'Гладишь — ей хорошо' },
+      feed: { bubble:'радуется еде', mood:'радуется', hunger:'очень сытая', pill:'Покормили — довольна' },
+      house: { bubble:'спряталась в домик', mood:'в домике', hunger:'сытая', pill:'Домик и отдых' },
+      sleep: { bubble:'тихо засыпает', mood:'сонная', hunger:'сытая', pill:'Сонный режим' },
+      play: { bubble:'маленькая радость', mood:'весёлая', hunger:'чуть голодная', pill:'Милая радость' }
+    };
+    function setMode(mode) {
+      els.scene.className = 'scene glass ' + mode;
+      const data = map[mode];
+      els.bubble.textContent = data.bubble;
+      els.modePill.textContent = data.pill;
+      els.moodLabel.textContent = data.mood;
+      els.hungerLabel.textContent = data.hunger;
+      els.controls.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+    }
+    els.controls.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+    els.touch.addEventListener('pointerdown', () => setMode('pet'));
+    ['pointerup','pointerleave','pointercancel'].forEach(ev => els.touch.addEventListener(ev, () => setTimeout(() => setMode('relax'), 700)));
+    setMode('relax');
+  </script>
+</body>
+</html>
