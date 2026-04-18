@@ -12,102 +12,144 @@ class SoundManager {
         this.audioContext = new AudioContext();
         this.masterGain = this.audioContext.createGain();
         this.masterGain.connect(this.audioContext.destination);
-        this.masterGain.gain.value = 0.25;
+        this.masterGain.gain.value = 0.12;
       }
     }
     return this.audioContext;
   }
 
-  playTone(frequency, duration, type = 'sine') {
-    if (!this.enabled) return;
-    
+  playOsc(freq, duration, type, startTime, gainVal) {
     const ctx = this.getAudioContext();
     if (!ctx) return;
 
-    try {
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
 
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.85, startTime + duration);
 
-      osc.type = type;
-      osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(frequency * 0.9, ctx.currentTime + duration);
+    filter.type = 'highpass';
+    filter.frequency.value = 800;
 
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(gainVal, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
-      osc.connect(gain);
-      gain.connect(this.masterGain);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
 
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {
-      console.log('Звук недоступен');
-    }
+    osc.start(startTime);
+    osc.stop(startTime + duration);
   }
 
-  playSequence(frequencies, duration, interval) {
-    frequencies.forEach((freq, i) => {
-      setTimeout(() => {
-        this.playTone(freq, duration);
-      }, i * interval);
+  // WHEEK - самый реальный писк морской свинки
+  wheekSound() {
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    this.playOsc(820, 0.22, 'triangle', now, 0.08);
+    this.playOsc(950, 0.18, 'triangle', now + 0.25, 0.07);
+    this.playOsc(780, 0.2, 'triangle', now + 0.48, 0.06);
+  }
+
+  // Урчание - как у настоящей морской свинки
+  purrSound() {
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    [160, 170, 165, 175].forEach((f, i) => {
+      this.playOsc(f, 0.09, 'sine', now + i * 0.1, 0.04);
     });
   }
 
-  // WHEEK - писк морской свинки (характерный звук когда видит еду)
-  wheekSound() {
-    this.playSequence([800, 900], 0.25, 150);
-    setTimeout(() => {
-      this.playSequence([750, 850], 0.25, 150);
-    }, 400);
-  }
-
-  // Урчание морской свинки (purring - когда довольна)
-  purrSound() {
-    this.playSequence([350, 320, 340, 330], 0.08, 60);
-  }
-
-  // Звук еды - хрумкание
+  // Хрумкание - быстрые звуки еды
   eatSound() {
-    this.playSequence([400, 380, 420, 390], 0.1, 70);
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    [420, 390, 430, 400].forEach((f, i) => {
+      this.playOsc(f, 0.07, 'square', now + i * 0.09, 0.05);
+    });
   }
 
-  // Звук счастья/игры - весёлые писки
-  happySound() {
-    this.playSequence([700, 800, 900, 850], 0.12, 80);
-  }
-
-  // Звук игры - энергичные писки
+  // Звук игры
   playSound() {
-    this.playSequence([750, 850, 950, 900, 800], 0.1, 100);
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    [680, 780, 920, 850, 720].forEach((f, i) => {
+      this.playOsc(f, 0.1, 'triangle', now + i * 0.12, 0.06);
+    });
   }
 
-  // Звук сна - низкое мурлыканье
+  // Сон - низкое мурлыканье
   sleepSound() {
-    this.playTone(280, 0.6, 'sine');
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(130, now + 0.7);
+
+    filter.type = 'lowpass';
+    filter.frequency.value = 250;
+
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.7);
   }
 
-  // Звук пробуждения - растягивающийся писк
+  // Пробуждение
   wakeSound() {
-    this.playSequence([500, 600, 700, 600], 0.15, 100);
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const now = ctx.currentTime;
+    [480, 640, 780, 620].forEach((f, i) => {
+      this.playOsc(f, 0.12, 'triangle', now + i * 0.1, 0.05);
+    });
   }
 
-  // Звук ласки - мягкое урчание
+  // Ласка - мягкое урчание
   petSound() {
-    this.playSequence([300, 320, 310, 330], 0.12, 80);
-  }
+    if (!this.enabled) return;
+    const ctx = this.getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
 
-  // Звук испуга - пронзительный писк
-  scaredSound() {
-    this.playSequence([1000, 900, 1100], 0.08, 80);
-  }
-
-  // Грустный звук - печальный писк
-  sadSound() {
-    this.playSequence([400, 350, 300], 0.25, 150);
+    const now = ctx.currentTime;
+    [190, 210, 200, 215].forEach((f, i) => {
+      this.playOsc(f, 0.1, 'sine', now + i * 0.11, 0.035);
+    });
   }
 
   toggleSound() {
