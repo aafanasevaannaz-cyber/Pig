@@ -5,7 +5,6 @@
   --text: #654321;
   --border: #DDA0DD;
   --bg: #FFF9E6;
-  --success: #4CAF50;
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
@@ -135,57 +134,85 @@ body {
   transform: scale(1.08);
 }
 
-/* Pig CSS Styling */
+/* МОРСКАЯ СВИНКА (Guinea Pig) */
 .pig-body {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-.pig-head {
+/* Округлое тело морской свинки */
+.pig-body-main {
   position: absolute;
-  width: 75px;
-  height: 65px;
+  width: 85px;
+  height: 75px;
   background: #FFB6D9;
-  border-radius: 55% 55% 45% 45%;
-  top: 8px;
-  left: 32px;
+  border-radius: 55% 55% 50% 50%;
+  top: 42px;
+  left: 27px;
   border: 2.5px solid var(--text);
-  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: inset -3px -3px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Голова морской свинки (передняя часть) */
+.pig-head {
+  position: absolute;
+  width: 70px;
+  height: 65px;
+  background: #FFB6D9;
+  border-radius: 60% 60% 50% 50%;
+  top: 15px;
+  left: 35px;
+  border: 2.5px solid var(--text);
+  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+/* Маленькие ушки морской свинки */
 .pig-ear {
   position: absolute;
-  width: 18px;
-  height: 24px;
+  width: 14px;
+  height: 16px;
   background: #FFB6D9;
-  border-radius: 50% 50% 50% 40%;
+  border-radius: 50%;
   border: 2px solid var(--text);
-  top: -8px;
+  top: -6px;
 }
 
 .pig-ear.left {
-  left: 12px;
-  transform: rotate(-20deg);
+  left: 10px;
 }
 
 .pig-ear.right {
-  right: 12px;
-  transform: rotate(20deg);
+  right: 10px;
 }
 
+/* Внутренность уха */
+.pig-ear::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 8px;
+  background: #FF99BB;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Глаза морской свинки */
 .pig-eyes {
   position: absolute;
   width: 100%;
   display: flex;
   justify-content: space-around;
-  top: 20px;
-  padding: 0 12px;
+  top: 18px;
+  padding: 0 14px;
 }
 
 .pig-eye {
-  width: 7px;
-  height: 9px;
+  width: 8px;
+  height: 10px;
   background: var(--text);
   border-radius: 50%;
   position: relative;
@@ -199,34 +226,24 @@ body {
   background: white;
   border-radius: 50%;
   top: 1px;
-  left: 1px;
+  left: 2px;
 }
 
-.pig-mouth {
-  position: absolute;
-  width: 20px;
-  height: 8px;
-  border: 2px solid var(--text);
-  border-top: none;
-  border-radius: 0 0 20px 20px;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
+/* Пятачок морской свинки */
 .pig-snout {
   position: absolute;
-  width: 28px;
-  height: 18px;
+  width: 24px;
+  height: 16px;
   background: #FF99BB;
   border-radius: 50%;
-  bottom: 10px;
-  left: 24px;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
   border: 2px solid var(--text);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .nostril {
@@ -236,60 +253,62 @@ body {
   border-radius: 50%;
 }
 
-.pig-body-main {
+/* Ротик */
+.pig-mouth {
   position: absolute;
-  width: 65px;
-  height: 55px;
-  background: #FFB6D9;
-  border-radius: 50%;
-  top: 55px;
-  left: 37px;
-  border: 2.5px solid var(--text);
-  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+  width: 10px;
+  height: 4px;
+  border-bottom: 2px solid var(--text);
+  border-radius: 0 0 10px 10px;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
+/* Короткие лапки морской свинки */
 .pig-legs {
   position: absolute;
   width: 100%;
   bottom: 0;
   display: flex;
   justify-content: space-around;
-  padding: 0 18px;
-  gap: 8px;
+  padding: 0 15px;
+  gap: 6px;
 }
 
 .pig-leg {
-  width: 12px;
-  height: 32px;
+  width: 14px;
+  height: 28px;
   background: #FFB6D9;
-  border-radius: 6px;
+  border-radius: 7px;
   border: 2px solid var(--text);
   position: relative;
 }
 
+/* Копытце */
 .pig-leg::after {
   content: '';
   position: absolute;
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: #FF99BB;
   border: 2px solid var(--text);
   border-top: none;
-  border-radius: 0 0 4px 4px;
-  bottom: -8px;
+  border-radius: 0 0 3px 3px;
+  bottom: -6px;
   left: 0;
 }
 
+/* Хвостик (очень короткий, почти невидимый) */
 .pig-tail {
   position: absolute;
-  width: 18px;
-  height: 20px;
-  right: 8px;
-  bottom: 25px;
-  border: 2.5px solid var(--text);
-  border-radius: 50%;
-  background: #FFB6D9;
-  transform: rotate(-25deg);
+  width: 2px;
+  height: 10px;
+  right: 12px;
+  bottom: 22px;
+  background: var(--text);
+  border-radius: 2px;
+  opacity: 0.5;
 }
 
 .pet-status {
@@ -471,7 +490,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Special effects */
 .heart {
   position: absolute;
   pointer-events: none;

@@ -12,7 +12,7 @@ class SoundManager {
         this.audioContext = new AudioContext();
         this.masterGain = this.audioContext.createGain();
         this.masterGain.connect(this.audioContext.destination);
-        this.masterGain.gain.value = 0.3;
+        this.masterGain.gain.value = 0.25;
       }
     }
     return this.audioContext;
@@ -34,7 +34,7 @@ class SoundManager {
 
       osc.type = type;
       osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(frequency * 0.8, ctx.currentTime + duration);
+      osc.frequency.exponentialRampToValueAtTime(frequency * 0.9, ctx.currentTime + duration);
 
       gain.gain.setValueAtTime(0.1, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
@@ -57,39 +57,57 @@ class SoundManager {
     });
   }
 
-  // Звук еды (хрумкание)
+  // WHEEK - писк морской свинки (характерный звук когда видит еду)
+  wheekSound() {
+    this.playSequence([800, 900], 0.25, 150);
+    setTimeout(() => {
+      this.playSequence([750, 850], 0.25, 150);
+    }, 400);
+  }
+
+  // Урчание морской свинки (purring - когда довольна)
+  purrSound() {
+    this.playSequence([350, 320, 340, 330], 0.08, 60);
+  }
+
+  // Звук еды - хрумкание
   eatSound() {
-    this.playSequence([200, 220, 180], 0.1, 80);
+    this.playSequence([400, 380, 420, 390], 0.1, 70);
   }
 
-  // Звук счастья
+  // Звук счастья/игры - весёлые писки
   happySound() {
-    this.playSequence([400, 500, 600], 0.15, 100);
+    this.playSequence([700, 800, 900, 850], 0.12, 80);
   }
 
-  // Звук игры
+  // Звук игры - энергичные писки
   playSound() {
-    this.playSequence([600, 800, 1000], 0.1, 120);
+    this.playSequence([750, 850, 950, 900, 800], 0.1, 100);
   }
 
-  // Звук сна
+  // Звук сна - низкое мурлыканье
   sleepSound() {
-    this.playTone(200, 0.5, 'sine');
+    this.playTone(280, 0.6, 'sine');
   }
 
-  // Звук пробуждения
+  // Звук пробуждения - растягивающийся писк
   wakeSound() {
-    this.playSequence([400, 600, 800], 0.1, 100);
+    this.playSequence([500, 600, 700, 600], 0.15, 100);
   }
 
-  // Звук нежности
+  // Звук ласки - мягкое урчание
   petSound() {
-    this.playSequence([300, 350, 300], 0.15, 100);
+    this.playSequence([300, 320, 310, 330], 0.12, 80);
   }
 
-  // Грустный звук
+  // Звук испуга - пронзительный писк
+  scaredSound() {
+    this.playSequence([1000, 900, 1100], 0.08, 80);
+  }
+
+  // Грустный звук - печальный писк
   sadSound() {
-    this.playSequence([300, 250, 200], 0.2, 150);
+    this.playSequence([400, 350, 300], 0.25, 150);
   }
 
   toggleSound() {

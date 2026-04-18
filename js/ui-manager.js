@@ -32,7 +32,7 @@ class UIManager {
     });
 
     this.elements.resetBtn.addEventListener('click', () => {
-      if (confirm('Вы уверены? Игра будет сброшена!')) {
+      if (confirm('Вы уверены? Морская свинка будет забыта!')) {
         petLogic.reset();
       }
     });
@@ -152,8 +152,8 @@ class UIManager {
       const result = callbacks.onFeed();
       if (result) {
         this.playAnimation('eating');
-        this.showFeedback('Ммм, вкусно! 😋');
-        this.addBubbles('Ном-ном! 🍎');
+        this.showFeedback('WHEEK WHEEK! 🍎');
+        this.addBubbles('Ням-ням!');
       }
     };
 
@@ -161,7 +161,7 @@ class UIManager {
       const result = callbacks.onPet();
       if (result) {
         this.playAnimation('wiggle');
-        this.showFeedback('Мне приятно! 😌');
+        this.showFeedback('Мур-мур! 😌');
         this.addHearts(2);
       }
     };
@@ -170,7 +170,7 @@ class UIManager {
       const result = callbacks.onPlay();
       if (result) {
         this.playAnimation('bounce');
-        this.showFeedback('Ура, играем! 🎾');
+        this.showFeedback('Wheek wheek wheek! 🎾');
         this.addHearts(3);
         this.addSparkles(4);
       }

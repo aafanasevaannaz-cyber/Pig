@@ -3,15 +3,15 @@ class PetLogic {
     this.loadState();
     
     this.moods = {
-      sleeping: { text: 'спит', emoji: '😴', status: 'Свинка спит... Zzz' },
-      veryHappy: { text: 'восторг', emoji: '🤩', status: 'Свинка прыгает от радости!' },
-      happy: { text: 'довольна', emoji: '😊', status: 'Свинка счастлива!' },
-      playful: { text: 'игривая', emoji: '🎾', status: 'Свинка хочет играть!' },
-      calm: { text: 'спокойна', emoji: '😌', status: 'Свинка отдыхает...' },
-      hungry: { text: 'голодна', emoji: '😋', status: 'Свинка хочет кушать!' },
-      veryHungry: { text: 'очень голодна', emoji: '🤤', status: 'Свинка очень голодна!' },
-      tired: { text: 'устала', emoji: '😪', status: 'Свинке нужен отдых' },
-      veryTired: { text: 'очень устала', emoji: '💤', status: 'Свинка падает с ног!' }
+      sleeping: { text: 'спит', emoji: '😴', status: 'Морская свинка спит... Zzz' },
+      veryHappy: { text: 'восторг', emoji: '🤩', status: 'Морская свинка прыгает от радости!' },
+      happy: { text: 'довольна', emoji: '😊', status: 'Морская свинка счастлива!' },
+      playful: { text: 'игривая', emoji: '🎾', status: 'Морская свинка хочет играть!' },
+      calm: { text: 'спокойна', emoji: '😌', status: 'Морская свинка отдыхает...' },
+      hungry: { text: 'голодна', emoji: '😋', status: 'Морская свинка хочет кушать!' },
+      veryHungry: { text: 'очень голодна', emoji: '🤤', status: 'Морская свинка очень голодна! WHEEK!' },
+      tired: { text: 'устала', emoji: '😪', status: 'Морской свинке нужен отдых' },
+      veryTired: { text: 'очень устала', emoji: '💤', status: 'Морская свинка едва держит глаза открытыми!' }
     };
 
     this.startAutoUpdate();
@@ -60,7 +60,7 @@ class PetLogic {
     this.state.energy = Math.max(0, this.state.energy - 8);
     this.state.lastAction = 'feed';
     
-    soundManager.eatSound();
+    soundManager.wheekSound();
     this.saveState();
     
     return { action: 'feed', emoji: '🍎' };
@@ -74,7 +74,7 @@ class PetLogic {
     this.state.hunger = Math.min(100, this.state.hunger + 3);
     this.state.lastAction = 'pet';
     
-    soundManager.petSound();
+    soundManager.purrSound();
     this.saveState();
     
     return { action: 'pet', emoji: '🎀' };
