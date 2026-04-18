@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Свинка-антистресс</title>
+  <title>🐷 Свинка-Дружок | Антистресс Тамагочи</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/animations.css">
 </head>
 <body>
   <div class="app-container">
     <header class="app-header">
-      <h1>🐷 Свинка-дружок</h1>
-      <p class="subtitle">Твой антистресс-пета</p>
+      <h1>🐷 Свинка-Дружок</h1>
+      <p class="subtitle">Твой антистресс-компаньон</p>
+      <div class="header-controls">
+        <button id="soundToggle" class="sound-btn" title="Включить/выключить звук">🔊</button>
+        <button id="resetBtn" class="reset-btn" title="Сбросить игру">↻</button>
+      </div>
     </header>
 
     <main class="app-main">
@@ -20,15 +24,19 @@
           <div class="pet" id="pet">
             <div class="pig-body">
               <div class="pig-head">
-                <div class="pig-ear"></div>
-                <div class="pig-ear"></div>
+                <div class="pig-ear left"></div>
+                <div class="pig-ear right"></div>
                 <div class="pig-snout">
                   <div class="nostril"></div>
                   <div class="nostril"></div>
                 </div>
-                <div class="pig-eye"></div>
-                <div class="pig-eye"></div>
+                <div class="pig-eyes">
+                  <div class="pig-eye left"></div>
+                  <div class="pig-eye right"></div>
+                </div>
+                <div class="pig-mouth"></div>
               </div>
+              <div class="pig-body-main"></div>
               <div class="pig-legs">
                 <div class="pig-leg"></div>
                 <div class="pig-leg"></div>
@@ -39,32 +47,38 @@
             </div>
           </div>
           <div class="pet-status">
-            <p class="status-text" id="statusText">Свинка спит...</p>
-            <div class="emotion" id="emotion">😴</div>
+            <p class="status-text" id="statusText">Свинка проснулась...</p>
+            <div class="emotion" id="emotion">🐷</div>
           </div>
         </div>
 
         <div class="stats-panel">
           <div class="stat">
-            <label>Голод</label>
+            <div class="stat-header">
+              <label>🍎 Голод</label>
+              <span id="hungerValue">30%</span>
+            </div>
             <div class="stat-bar">
               <div class="stat-fill hunger-fill" id="hungerBar"></div>
             </div>
-            <span id="hungerValue">80%</span>
           </div>
           <div class="stat">
-            <label>Счастье</label>
+            <div class="stat-header">
+              <label>💕 Счастье</label>
+              <span id="happinessValue">70%</span>
+            </div>
             <div class="stat-bar">
               <div class="stat-fill happiness-fill" id="happinessBar"></div>
             </div>
-            <span id="happinessValue">70%</span>
           </div>
           <div class="stat">
-            <label>Энергия</label>
+            <div class="stat-header">
+              <label>⚡ Энергия</label>
+              <span id="energyValue">80%</span>
+            </div>
             <div class="stat-bar">
               <div class="stat-fill energy-fill" id="energyBar"></div>
             </div>
-            <span id="energyValue">60%</span>
           </div>
         </div>
       </div>
@@ -73,11 +87,11 @@
         <button class="btn btn-primary" id="feedBtn">
           🍎 Покормить
         </button>
-        <button class="btn btn-primary" id="playBtn">
-          🎾 Поиграть
-        </button>
         <button class="btn btn-primary" id="petBtn">
           🎀 Погладить
+        </button>
+        <button class="btn btn-primary" id="playBtn">
+          🎾 Поиграть
         </button>
         <button class="btn btn-secondary" id="sleepBtn">
           😴 Спать
@@ -86,17 +100,23 @@
 
       <div class="info-panel">
         <div class="info-item">
-          <span class="label">Состояние:</span>
-          <span id="moodText" class="value">Спит</span>
+          <span class="label">Настроение:</span>
+          <span id="moodText" class="value">😌</span>
         </div>
         <div class="info-item">
           <span class="label">Время:</span>
-          <span id="timeText" class="value">00:00</span>
+          <span id="timeText" class="value">--:--</span>
         </div>
       </div>
     </main>
+
+    <footer class="app-footer">
+      <p>Сделано с любовью 💚 | Версия 1.0</p>
+    </footer>
   </div>
 
+  <!-- Аудио контекст -->
+  <script src="js/sound-manager.js"></script>
   <script src="js/pet-logic.js"></script>
   <script src="js/ui-manager.js"></script>
   <script src="js/app.js"></script>

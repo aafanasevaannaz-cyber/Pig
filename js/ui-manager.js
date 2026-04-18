@@ -15,22 +15,45 @@ class UIManager {
       feedBtn: document.getElementById('feedBtn'),
       playBtn: document.getElementById('playBtn'),
       petBtn: document.getElementById('petBtn'),
-      sleepBtn: document.getElementById('sleepBtn')
+      sleepBtn: document.getElementById('sleepBtn'),
+      soundToggle: document.getElementById('soundToggle'),
+      resetBtn: document.getElementById('resetBtn')
     };
+
+    this.heartCount = 0;
+    this.initEventListeners();
+  }
+
+  initEventListeners() {
+    this.elements.soundToggle.addEventListener('click', () => {
+      const enabled = soundManager.toggleSound();
+      this.elements.soundToggle.textContent = enabled ? '🔊' : '🔇';
+      this.elements.soundToggle.style.opacity = enabled ? '1' : '0.5';
+    });
+
+    this.elements.resetBtn.addEventListener('click', () => {
+      if (confirm('Вы уверены? Игра будет сброшена!')) {
+        petLogic.reset();
+      }
+    });
   }
 
   updateStats(state) {
-    const hunger = Math.max(0, 100 - state.hunger);
-    const happiness = state.happiness;
-    const energy = state.energy;
+    const hungerPercent = Math.max(0, 100 - state.hunger);
+    const happinessPercent = state.happiness;
+    const energyPercent = state.energy;
 
-    this.elements.hungerBar.style.width = hunger + '%';
-    this.elements.happinessBar.style.width = happiness + '%';
-    this.elements.energyBar.style.width = energy + '%';
+    this.updateBar(this.elements.hungerBar, hungerPercent);
+    this.updateBar(this.elements.happinessBar, happinessPercent);
+    this.updateBar(this.elements.energyBar, energyPercent);
 
-    this.elements.hungerValue.textContent = Math.round(hunger) + '%';
-    this.elements.happinessValue.textContent = Math.round(happiness) + '%';
-    this.elements.energyValue.textContent = Math.round(energy) + '%';
+    this.elements.hungerValue.textContent = Math.round(hungerPercent) + '%';
+    this.elements.happinessValue.textContent = Math.round(happinessPercent) + '%';
+    this.elements.energyValue.textContent = Math.round(energyPercent) + '%';
+  }
+
+  updateBar(element, value) {
+    element.style.width = Math.min(100, Math.max(0, value)) + '%';
   }
 
   updateMood(mood) {
@@ -47,17 +70,18 @@ class UIManager {
   }
 
   playAnimation(name) {
-    this.elements.pet.classList.remove(
-      'wiggle', 'bounce', 'spin', 'excited', 'sleeping', 'eating'
+    const pet = this.elements.pet;
+    pet.classList.remove(
+      'wiggle', 'bounce', 'spin', 'excited', 'sleeping', 'eating', 'nod'
     );
 
     if (name) {
-      void this.elements.pet.offsetWidth;
-      this.elements.pet.classList.add(name);
+      void pet.offsetWidth;
+      pet.classList.add(name);
     }
   }
 
-  showFeedback(text, duration = 1500) {
+  showFeedback(text, duration = 1200) {
     const prev = this.elements.statusText.textContent;
     this.elements.statusText.textContent = text;
 
@@ -66,43 +90,104 @@ class UIManager {
     }, duration);
   }
 
-  addHearts() {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.textContent = '❤️';
-    heart.style.left = Math.random() * 100 + '%';
-    heart.style.top = '50%';
-    this.elements.pet.appendChild(heart);
+  addHearts(count = 3) {
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '❤️';
+        heart.style.left = (30 + Math.random() * 40) + '%';
+        heart.style.top = '50%';
+        this.elements.pet.appendChild(heart);
 
-    setTimeout(() => heart.remove(), 1000);
+        setTimeout(() => heart.remove(), 1000);
+      }, i * 100);
+    }
+  }
+
+  addSparkles(count = 4) {
+    for (let i = 0; i < count; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.textContent = '✨';
+      sparkle.style.left = (25 + Math.random() * 50) + '%';
+      sparkle.style.top = (20 + Math.random() * 40) + '%';
+      this.elements.pet.appendChild(sparkle);
+
+      setTimeout(() => sparkle.remove(), 800);
+    }
+  }
+
+  addBubbles(text) {
+    const bubble = document.createElement('div');
+    bubble.className = 'speech-bubble';
+    bubble.textContent = text;
+    this.elements.pet.appendChild(bubble);
+
+    setTimeout(() => bubble.remove(), 2000);
   }
 
   updateButtonStates(state) {
-    this.elements.sleepBtn.textContent = state.isSleeping
-      ? '⬆️ Проснуться'
-      : '😴 Спать';
+    const btnText = state.isSleeping ? '⬆️ Проснуться' : '😴 Спать';
+    this.elements.sleepBtn.textContent = btnText;
+
+    const buttonsDisabled = state.isSleeping;
+    this.elements.feedBtn.disabled = buttonsDisabled;
+    this.elements.petBtn.disabled = buttonsDisabled;
+    this.elements.playBtn.disabled = buttonsDisabled;
+
+    if (buttonsDisabled) {
+      this.elements.feedBtn.style.opacity = '0.5';
+      this.elements.petBtn.style.opacity = '0.5';
+      this.elements.playBtn.style.opacity = '0.5';
+    } else {
+      this.elements.feedBtn.style.opacity = '1';
+      this.elements.petBtn.style.opacity = '1';
+      this.elements.playBtn.style.opacity = '1';
+    }
   }
 
   setButtonClickHandlers(callbacks) {
     this.elements.feedBtn.onclick = () => {
-      callbacks.onFeed();
-      this.playAnimation('eating');
+      const result = callbacks.onFeed();
+      if (result) {
+        this.playAnimation('eating');
+        this.showFeedback('Ммм, вкусно! 😋');
+        this.addBubbles('Ном-ном! 🍎');
+      }
     };
 
     this.elements.petBtn.onclick = () => {
-      callbacks.onPet();
-      this.playAnimation('wiggle');
-      this.addHearts();
+      const result = callbacks.onPet();
+      if (result) {
+        this.playAnimation('wiggle');
+        this.showFeedback('Мне приятно! 😌');
+        this.addHearts(2);
+      }
     };
 
     this.elements.playBtn.onclick = () => {
-      callbacks.onPlay();
-      this.playAnimation('bounce');
-      this.addHearts();
+      const result = callbacks.onPlay();
+      if (result) {
+        this.playAnimation('bounce');
+        this.showFeedback('Ура, играем! 🎾');
+        this.addHearts(3);
+        this.addSparkles(4);
+      }
     };
 
     this.elements.sleepBtn.onclick = () => {
       callbacks.onSleep();
     };
   }
+
+  setPetClickHandler(callback) {
+    this.elements.pet.onclick = (e) => {
+      if (e.target === this.elements.pet) {
+        callback();
+      }
+    };
+  }
 }
+
+const uiManager = new UIManager();
