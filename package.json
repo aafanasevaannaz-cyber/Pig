@@ -1,0 +1,26 @@
+{
+  "name": "guinea-pig-pet-app",
+  "version": "1.0.0",
+  "description": "Свинка-Дружок: Антистресс Тамагочи",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000",
+    "test": "echo 'No tests - static site'"
+  },
+  "keywords": [
+    "tamagotchi",
+    "pet",
+    "anti-stress",
+    "pig",
+    "game",
+    "relaxation",
+    "interactive"
+  ],
+  "author": "Анна Афанасева",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aafanasevaannaz-cyber/Pig"
+  }
+}
